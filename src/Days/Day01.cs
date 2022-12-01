@@ -16,9 +16,7 @@ public class Day01 : BaseDay
         var elfs = input.Paragraphs();
         var calories = elfs.Select(e => e.Integers().Sum()).ToList();
 
-        calories.Sort();
-
-        var result = calories.Window(3).Last().Sum();
+        var result = calories.OrderByDescending(x => x).Take(3).Sum();
 
         return result.ToString();
     }
