@@ -52,10 +52,10 @@ public class Day01 : BaseDay
 
         elfs.Add(elf);
 
-        var count = elfs.Count;
-
         elfs.Sort();
 
-        return (elfs[count - 1] + elfs[count - 2] + elfs[count - 3]).ToString();
+        var result = elfs.Window(3).Last().Sum();
+
+        return result.ToString();
     }
 }
