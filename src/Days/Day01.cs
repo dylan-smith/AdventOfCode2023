@@ -14,7 +14,7 @@ public class Day01 : BaseDay
     public override string PartTwo(string input)
     {
         var elfs = input.Paragraphs();
-        var calories = elfs.Select(e => e.Integers().Sum()).ToList();
+        var calories = elfs.Select(e => e.Integers().Sum());
 
         var result = calories.OrderByDescending(x => x).Take(3).Sum();
 
