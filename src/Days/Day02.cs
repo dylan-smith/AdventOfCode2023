@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using System.Threading.Tasks.Sources;
-
-namespace AdventOfCode.Days;
+﻿namespace AdventOfCode.Days;
 
 public enum RPSMove
 {
