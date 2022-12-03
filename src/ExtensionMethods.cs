@@ -24,6 +24,19 @@ namespace AdventOfCode
         West
     }
 
+    public static class CharExtensions
+    {
+        public static bool IsLower(this char c)
+        {
+            return c is >= 'a' and <= 'z';
+        }
+
+        public static bool IsUpper(this char c)
+        {
+            return c is >= 'A' and <= 'Z';
+        }
+    }
+
     public static class DirectionExtensions
     {
         public static Direction TurnLeft(this Direction dir)
@@ -647,7 +660,12 @@ namespace AdventOfCode
 
         public static IEnumerable<IEnumerable<T>> Window<T>(this IEnumerable<T> list, int size)
         {
-            for (var i = size - 1; i < list.Count(); i++)
+            return list.Window(size, true);
+        }
+
+        public static IEnumerable<IEnumerable<T>> Window<T>(this IEnumerable<T> list, int size, bool overlap)
+        {
+            for (var i = size - 1; i < list.Count(); i += overlap ? 1 : size)
             {
                 yield return list.Skip(i - size + 1).Take(size);
             }
