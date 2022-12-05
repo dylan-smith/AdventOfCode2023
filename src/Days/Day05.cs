@@ -20,7 +20,6 @@ public class Day05 : BaseDay
     private List<List<char>> ParseStacks(string input)
     {
         var lines = input.Lines().ToList();
-
         var numStacks = (lines.First().Length + 1) / 4;
 
         var stacks = new List<List<char>>();
@@ -34,9 +33,7 @@ public class Day05 : BaseDay
 
                 if (stackInput.StartsWith('['))
                 {
-                    var stackChar = stackInput[1];
-
-                    stacks[i].AddFirst(stackChar);
+                    stacks[i].AddFirst(stackInput[1]);
                 }
             }
         }
