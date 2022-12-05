@@ -1,10 +1,9 @@
-﻿namespace AdventOfCode
+﻿namespace AdventOfCode;
+
+public enum Compass
 {
-    public enum Compass
-    {
-        North,
-        East,
-        South,
-        West
-    }
+    North,
+    East,
+    South,
+    West
 }

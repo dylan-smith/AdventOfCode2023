@@ -1,36 +1,35 @@
-﻿namespace AdventOfCode
+﻿namespace AdventOfCode;
+
+public static class NumericExtensions
 {
-    public static class NumericExtensions
+    public static bool IsPrime(this int number)
     {
-        public static bool IsPrime(this int number)
+        var sqrt = Math.Floor(Math.Sqrt((double)number));
+
+        for (var x = 2; x <= sqrt; x++)
         {
-            var sqrt = Math.Floor(Math.Sqrt((double)number));
-
-            for (var x = 2; x <= sqrt; x++)
+            if (number % x == 0)
             {
-                if (number % x == 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public static void Times(this int number, Action action)
-        {
-            for (var i = 0; i < number; i++)
-            {
-                action();
+                return false;
             }
         }
 
-        public static void Times(this int number, Action<int> action)
+        return true;
+    }
+
+    public static void Times(this int number, Action action)
+    {
+        for (var i = 0; i < number; i++)
         {
-            for (var i = 0; i < number; i++)
-            {
-                action(i);
-            }
+            action();
+        }
+    }
+
+    public static void Times(this int number, Action<int> action)
+    {
+        for (var i = 0; i < number; i++)
+        {
+            action(i);
         }
     }
 }

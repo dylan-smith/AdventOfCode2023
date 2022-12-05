@@ -1,4 +1,4 @@
-﻿namespace AdventOfCode.Utility;
+﻿namespace AdventOfCode;
 
 public static class DictionaryExtensions
 {
