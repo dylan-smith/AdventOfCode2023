@@ -10,7 +10,7 @@ public class Day05 : BaseDay
         input = input[input.IndexOf("move")..];
 
         var moves = input.ParseLines(ParseMove);
-        moves.ForEach(m => m.count.Times(() => MoveCrate(stacks, m.from, m.to)));
+        moves.ForEach(m => m.count.Times(() => MoveCrates(stacks, m.from, m.to, 1)));
 
         return string.Concat(stacks.Select(s => s.Last()));
     }
@@ -48,15 +48,6 @@ public class Day05 : BaseDay
         var to = int.Parse(words[5]);
 
         return (count, from, to);
-    }
-
-    private void MoveCrate(List<List<char>> stacks, int from, int to)
-    {
-        var fromStack = stacks[from - 1];
-        var toStack = stacks[to - 1];
-        
-        var crate = fromStack.Pop();
-        toStack.Add(crate);
     }
 
     private void MoveCrates(List<List<char>> stacks, int from, int to, int count)
