@@ -17,20 +17,29 @@ public class Day05 : BaseDay
         return result;
     }
 
-    private List<List<char>> ParseStacks(string v)
+    private List<List<char>> ParseStacks(string input)
     {
-        var stacks = new List<List<char>>
+        var lines = input.Lines().ToList();
+
+        var numStacks = (lines.First().Length + 1) / 4;
+
+        var stacks = new List<List<char>>();
+        stacks.Initialize(() => new List<char>(), numStacks);
+
+        foreach (var line in lines)
         {
-            new List<char>() { 'N', 'R', 'G', 'P' },
-            new List<char>() { 'J', 'T', 'B', 'L', 'F', 'G', 'D', 'C' },
-            new List<char>() { 'M', 'S', 'V' },
-            new List<char>() { 'L', 'S', 'R', 'C', 'Z', 'P' },
-            new List<char>() { 'P', 'S', 'L', 'V', 'C', 'W', 'D', 'Q' },
-            new List<char>() { 'C', 'T', 'N', 'W', 'D', 'M', 'S' },
-            new List<char>() { 'H', 'D', 'G', 'W', 'P' },
-            new List<char>() { 'Z', 'L', 'P', 'H', 'S', 'C', 'M', 'V' },
-            new List<char>() { 'R', 'P', 'F', 'L', 'W', 'G', 'Z' }
-        };
+            for (var i = 0; i < numStacks; i++)
+            {
+                var stackInput = line.Substring(i * 4, 3);
+
+                if (stackInput.StartsWith('['))
+                {
+                    var stackChar = stackInput[1];
+
+                    stacks[i].AddFirst(stackChar);
+                }
+            }
+        }
 
         return stacks;
     }
