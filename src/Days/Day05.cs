@@ -12,9 +12,7 @@ public class Day05 : BaseDay
         var moves = input.ParseLines(ParseMove);
         moves.ForEach(m => m.count.Times(() => MoveCrate(stacks, m.from, m.to)));
 
-        var result = string.Concat(stacks.Select(s => s.Last()));
-
-        return result;
+        return string.Concat(stacks.Select(s => s.Last()));
     }
 
     private List<List<char>> ParseStacks(string input)
@@ -79,8 +77,6 @@ public class Day05 : BaseDay
         var moves = input.ParseLines(ParseMove);
         moves.ForEach(m => MoveCrates(stacks, m.from, m.to, m.count));
 
-        var result = string.Concat(stacks.Select(s => s.Last()));
-
-        return result;
+        return string.Concat(stacks.Select(s => s.Last()));
     }
 }
