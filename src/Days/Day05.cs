@@ -5,44 +5,38 @@ public class Day05 : BaseDay
 {
     public override string PartOne(string input)
     {
-        var stacks = new List<List<char>>();
-
-        stacks.Add(new List<char>() { 'N', 'R', 'G', 'P' });
-        stacks.Add(new List<char>() { 'J', 'T', 'B', 'L', 'F', 'G', 'D', 'C' });
-        stacks.Add(new List<char>() { 'M', 'S', 'V' });
-        stacks.Add(new List<char>() { 'L', 'S', 'R', 'C', 'Z', 'P' });
-        stacks.Add(new List<char>() { 'P', 'S', 'L', 'V', 'C', 'W', 'D', 'Q' });
-        stacks.Add(new List<char>() { 'C', 'T', 'N', 'W', 'D', 'M', 'S' });
-        stacks.Add(new List<char>() { 'H', 'D', 'G', 'W', 'P' });
-        stacks.Add(new List<char>() { 'Z', 'L', 'P', 'H', 'S', 'C', 'M', 'V' });
-        stacks.Add(new List<char>() { 'R', 'P', 'F', 'L', 'W', 'G', 'Z' });
-
-        input = input.Substring(input.IndexOf("move"));
-
-        var moves = input.Lines();
-
-        foreach (var move in moves)
+        var stacks = new List<List<char>>
         {
-            var words = move.Words().ToList();
+            new List<char>() { 'N', 'R', 'G', 'P' },
+            new List<char>() { 'J', 'T', 'B', 'L', 'F', 'G', 'D', 'C' },
+            new List<char>() { 'M', 'S', 'V' },
+            new List<char>() { 'L', 'S', 'R', 'C', 'Z', 'P' },
+            new List<char>() { 'P', 'S', 'L', 'V', 'C', 'W', 'D', 'Q' },
+            new List<char>() { 'C', 'T', 'N', 'W', 'D', 'M', 'S' },
+            new List<char>() { 'H', 'D', 'G', 'W', 'P' },
+            new List<char>() { 'Z', 'L', 'P', 'H', 'S', 'C', 'M', 'V' },
+            new List<char>() { 'R', 'P', 'F', 'L', 'W', 'G', 'Z' }
+        };
 
-            var count = int.Parse(words[1]);
-            var start = int.Parse(words[3]);
-            var end = int.Parse(words[5]);
+        input = input[input.IndexOf("move")..];
 
-            for (var i = 0; i < count; i++)
-            {
-                MoveCrate(stacks, start, end);
-            }
-        }
+        var moves = input.ParseLines(ParseMove);
+        moves.ForEach(m => m.count.Times(() => MoveCrate(stacks, m.from, m.to)));
 
-        var result = string.Empty;
-
-        foreach (var stack in stacks)
-        {
-            result += stack.Last();
-        }
+        var result = stacks.Aggregate("", (acc, s) => acc + s.Last());
 
         return result;
+    }
+
+    private (int count, int from, int to) ParseMove(string line)
+    {
+        var words = line.Words().ToList();
+
+        var count = int.Parse(words[1]);
+        var from = int.Parse(words[3]);
+        var to = int.Parse(words[5]);
+
+        return (count, from, to);
     }
 
     private void MoveCrate(List<List<char>> stacks, int start, int end)
@@ -61,39 +55,25 @@ public class Day05 : BaseDay
 
     public override string PartTwo(string input)
     {
-        var stacks = new List<List<char>>();
-
-        stacks.Add(new List<char>() { 'N', 'R', 'G', 'P' });
-        stacks.Add(new List<char>() { 'J', 'T', 'B', 'L', 'F', 'G', 'D', 'C' });
-        stacks.Add(new List<char>() { 'M', 'S', 'V' });
-        stacks.Add(new List<char>() { 'L', 'S', 'R', 'C', 'Z', 'P' });
-        stacks.Add(new List<char>() { 'P', 'S', 'L', 'V', 'C', 'W', 'D', 'Q' });
-        stacks.Add(new List<char>() { 'C', 'T', 'N', 'W', 'D', 'M', 'S' });
-        stacks.Add(new List<char>() { 'H', 'D', 'G', 'W', 'P' });
-        stacks.Add(new List<char>() { 'Z', 'L', 'P', 'H', 'S', 'C', 'M', 'V' });
-        stacks.Add(new List<char>() { 'R', 'P', 'F', 'L', 'W', 'G', 'Z' });
-
-        input = input.Substring(input.IndexOf("move"));
-
-        var moves = input.Lines();
-
-        foreach (var move in moves)
+        var stacks = new List<List<char>>
         {
-            var words = move.Words().ToList();
+            new List<char>() { 'N', 'R', 'G', 'P' },
+            new List<char>() { 'J', 'T', 'B', 'L', 'F', 'G', 'D', 'C' },
+            new List<char>() { 'M', 'S', 'V' },
+            new List<char>() { 'L', 'S', 'R', 'C', 'Z', 'P' },
+            new List<char>() { 'P', 'S', 'L', 'V', 'C', 'W', 'D', 'Q' },
+            new List<char>() { 'C', 'T', 'N', 'W', 'D', 'M', 'S' },
+            new List<char>() { 'H', 'D', 'G', 'W', 'P' },
+            new List<char>() { 'Z', 'L', 'P', 'H', 'S', 'C', 'M', 'V' },
+            new List<char>() { 'R', 'P', 'F', 'L', 'W', 'G', 'Z' }
+        };
+        
+        input = input[input.IndexOf("move")..];
 
-            var count = int.Parse(words[1]);
-            var start = int.Parse(words[3]);
-            var end = int.Parse(words[5]);
+        var moves = input.ParseLines(ParseMove);
+        moves.ForEach(m => MoveCrates(stacks, m.from, m.to, m.count));
 
-            MoveCrates(stacks, start, end, count);
-        }
-
-        var result = string.Empty;
-
-        foreach (var stack in stacks)
-        {
-            result += stack.Last();
-        }
+        var result = stacks.Aggregate("", (acc, s) => acc + s.Last());
 
         return result;
     }
