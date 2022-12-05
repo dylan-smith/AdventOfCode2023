@@ -1,6 +1,4 @@
-﻿using AdventOfCode.Utility;
-
-namespace AdventOfCode.Days;
+﻿namespace AdventOfCode.Days;
 
 [Day(2022, 4)]
 public class Day04 : BaseDay

@@ -24,7 +24,7 @@ public class Day03 : BaseDay
     public override string PartTwo(string input)
     {
         var sacks = input.Lines();
-        var groups = sacks.Window(3, false);
+        var groups = sacks.Chunk(3);
         var badges = groups.Select(g => g.First().First(c => g.ElementAt(1).Contains(c) && g.Last().Contains(c)));
         
         return badges.Sum(b => GetScore(b)).ToString();
