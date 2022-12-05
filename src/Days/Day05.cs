@@ -23,7 +23,7 @@ public class Day05 : BaseDay
         var stacks = new List<List<char>>();
         stacks.Initialize(() => new List<char>(), numStacks);
 
-        foreach (var line in lines)
+        lines.ForEach(line =>
         {
             for (var i = 0; i < numStacks; i++)
             {
@@ -34,7 +34,7 @@ public class Day05 : BaseDay
                     stacks[i].AddFirst(stackInput[1]);
                 }
             }
-        }
+        });
 
         return stacks;
     }
@@ -52,11 +52,8 @@ public class Day05 : BaseDay
 
     private void MoveCrates(List<List<char>> stacks, int from, int to, int count)
     {
-        var fromStack = stacks[from - 1];
-        var toStack = stacks[to - 1];
-
-        var crates = fromStack.Pop(count);
-        toStack.AddRange(crates);
+        var crates = stacks[from - 1].Pop(count);
+        stacks[to - 1].AddRange(crates);
     }
 
     public override string PartTwo(string input)
