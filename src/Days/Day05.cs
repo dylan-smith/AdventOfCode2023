@@ -61,8 +61,8 @@ public class Day05 : BaseDay
         var stacks = ParseStacks(input[..input.IndexOf("move")]);
 
         input = input[input.IndexOf("move")..];
-
         var moves = input.ParseLines(ParseMove);
+        
         moves.ForEach(m => MoveCrates(stacks, m.from, m.to, m.count));
 
         return string.Concat(stacks.Select(s => s.Last()));
