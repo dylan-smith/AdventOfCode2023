@@ -5,6 +5,20 @@ public class Day05 : BaseDay
 {
     public override string PartOne(string input)
     {
+        var stacks = ParseStacks(input[..input.IndexOf("move")]);
+        
+        input = input[input.IndexOf("move")..];
+
+        var moves = input.ParseLines(ParseMove);
+        moves.ForEach(m => m.count.Times(() => MoveCrate(stacks, m.from, m.to)));
+
+        var result = stacks.Aggregate("", (acc, s) => acc + s.Last());
+
+        return result;
+    }
+
+    private List<List<char>> ParseStacks(string v)
+    {
         var stacks = new List<List<char>>
         {
             new List<char>() { 'N', 'R', 'G', 'P' },
@@ -18,14 +32,7 @@ public class Day05 : BaseDay
             new List<char>() { 'R', 'P', 'F', 'L', 'W', 'G', 'Z' }
         };
 
-        input = input[input.IndexOf("move")..];
-
-        var moves = input.ParseLines(ParseMove);
-        moves.ForEach(m => m.count.Times(() => MoveCrate(stacks, m.from, m.to)));
-
-        var result = stacks.Aggregate("", (acc, s) => acc + s.Last());
-
-        return result;
+        return stacks;
     }
 
     private (int count, int from, int to) ParseMove(string line)
@@ -54,27 +61,13 @@ public class Day05 : BaseDay
         var toStack = stacks[to - 1];
 
         var crates = fromStack.Pop(count);
-        
-        //var crates = fromStack.Skip(fromStack.Count - count).Take(count).ToList();
-        //stacks[from - 1] = fromStack.Take(fromStack.Count - count).ToList();
         toStack.AddRange(crates);
     }
 
     public override string PartTwo(string input)
     {
-        var stacks = new List<List<char>>
-        {
-            new List<char>() { 'N', 'R', 'G', 'P' },
-            new List<char>() { 'J', 'T', 'B', 'L', 'F', 'G', 'D', 'C' },
-            new List<char>() { 'M', 'S', 'V' },
-            new List<char>() { 'L', 'S', 'R', 'C', 'Z', 'P' },
-            new List<char>() { 'P', 'S', 'L', 'V', 'C', 'W', 'D', 'Q' },
-            new List<char>() { 'C', 'T', 'N', 'W', 'D', 'M', 'S' },
-            new List<char>() { 'H', 'D', 'G', 'W', 'P' },
-            new List<char>() { 'Z', 'L', 'P', 'H', 'S', 'C', 'M', 'V' },
-            new List<char>() { 'R', 'P', 'F', 'L', 'W', 'G', 'Z' }
-        };
-        
+        var stacks = ParseStacks(input[..input.IndexOf("move")]);
+
         input = input[input.IndexOf("move")..];
 
         var moves = input.ParseLines(ParseMove);
