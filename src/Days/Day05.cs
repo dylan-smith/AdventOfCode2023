@@ -39,18 +39,25 @@ public class Day05 : BaseDay
         return (count, from, to);
     }
 
-    private void MoveCrate(List<List<char>> stacks, int start, int end)
+    private void MoveCrate(List<List<char>> stacks, int from, int to)
     {
-        var crate = stacks[start - 1].Last();
-        stacks[start - 1].RemoveAt(stacks[start - 1].Count - 1);
-        stacks[end - 1].Add(crate);
+        var fromStack = stacks[from - 1];
+        var toStack = stacks[to - 1];
+        
+        var crate = fromStack.Pop();
+        toStack.Add(crate);
     }
 
-    private void MoveCrates(List<List<char>> stacks, int start, int end, int count)
+    private void MoveCrates(List<List<char>> stacks, int from, int to, int count)
     {
-        var crates = stacks[start - 1].Skip(stacks[start - 1].Count - count).Take(count).ToList();
-        stacks[start - 1] = stacks[start - 1].Take(stacks[start - 1].Count - count).ToList();
-        stacks[end - 1].AddRange(crates);
+        var fromStack = stacks[from - 1];
+        var toStack = stacks[to - 1];
+
+        var crates = fromStack.Pop(count);
+        
+        //var crates = fromStack.Skip(fromStack.Count - count).Take(count).ToList();
+        //stacks[from - 1] = fromStack.Take(fromStack.Count - count).ToList();
+        toStack.AddRange(crates);
     }
 
     public override string PartTwo(string input)

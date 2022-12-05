@@ -16,4 +16,38 @@ public static class ListExtensions
             list.Add(value);
         }
     }
+
+    public static void RemoveLast<T>(this IList<T> list)
+    {
+        list.RemoveAt(list.Count - 1);
+    }
+
+    public static void RemoveFirst<T>(this IList<T> list)
+    {
+        list.RemoveAt(0);
+    }
+
+    public static T Pop<T>(this IList<T> list)
+    {
+        var item = list.Last();
+        list.RemoveLast();
+
+        return item;
+    }
+
+    public static IEnumerable<T> Pop<T>(this IList<T> list, int count)
+    {
+        var items = list.Skip(list.Count - count).Take(count).ToList();
+        list.RemoveRange(list.Count - count, count);
+
+        return items;
+    }
+
+    public static void RemoveRange<T>(this IList<T> list, int index, int count)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            list.RemoveAt(index);
+        }
+    }
 }
