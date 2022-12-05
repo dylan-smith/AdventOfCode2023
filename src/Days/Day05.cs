@@ -12,7 +12,7 @@ public class Day05 : BaseDay
         var moves = input.ParseLines(ParseMove);
         moves.ForEach(m => m.count.Times(() => MoveCrate(stacks, m.from, m.to)));
 
-        var result = stacks.Aggregate("", (acc, s) => acc + s.Last());
+        var result = string.Concat(stacks.Select(s => s.Last()));
 
         return result;
     }
@@ -73,7 +73,7 @@ public class Day05 : BaseDay
         var moves = input.ParseLines(ParseMove);
         moves.ForEach(m => MoveCrates(stacks, m.from, m.to, m.count));
 
-        var result = stacks.Aggregate("", (acc, s) => acc + s.Last());
+        var result = string.Concat(stacks.Select(s => s.Last()));
 
         return result;
     }
