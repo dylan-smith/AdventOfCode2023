@@ -12,7 +12,16 @@ public class Day07 : BaseDay
     public override string PartOne(string input)
     {
         var commands = ParseCommands(input);
-        
+        var fileSystem = BuildFileSystem(commands);
+
+        CalculateDirSizes(fileSystem);
+        var dirSizes = GetDirSizes(fileSystem);
+
+        return dirSizes.Where(x => x.size <= 100000).Sum(x => x.size).ToString();
+    }
+
+    private Tree<(bool isFile, int size, string name)> BuildFileSystem(IEnumerable<(CommandType type, string command, IEnumerable<string> output)> commands)
+    {
         var fileSystem = new Tree<(bool isFile, int size, string name)>((false, 0, "/"));
         var pwd = fileSystem;
 
@@ -21,7 +30,7 @@ public class Day07 : BaseDay
             if (command.type == CommandType.cd)
             {
                 pwd = ExecuteCD(command, pwd);
-                
+
             }
             else if (command.type == CommandType.ls)
             {
@@ -29,10 +38,7 @@ public class Day07 : BaseDay
             }
         }
 
-        CalculateDirSizes(fileSystem);
-        var dirSizes = GetDirSizes(fileSystem);
-
-        return dirSizes.Where(x => x.size <= 100000).Sum(x => x.size).ToString();
+        return fileSystem;
     }
 
     private void ExecuteLS((CommandType type, string command, IEnumerable<string> output) command, Tree<(bool isFile, int size, string name)> pwd)
