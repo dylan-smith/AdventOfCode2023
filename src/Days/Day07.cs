@@ -13,11 +13,11 @@ public class Day07 : BaseDay
     {
         var commands = ParseCommands(input);
         var fileSystem = BuildFileSystem(commands);
-
         CalculateDirSizes(fileSystem);
+        
         var dirSizes = GetDirSizes(fileSystem);
 
-        return dirSizes.Where(x => x.size <= 100000).Sum(x => x.size).ToString();
+        return dirSizes.Where(x => x <= 100000).Sum().ToString();
     }
 
     private Tree<(bool isFile, int size, string name)> BuildFileSystem(IEnumerable<(CommandType type, string command, IEnumerable<string> output)> commands)
@@ -125,25 +125,9 @@ public class Day07 : BaseDay
         }
     }
 
-    private void PrintFileSystem(Tree<(bool isFile, int size, string name)> fileSystem, int level)
+    private IEnumerable<int> GetDirSizes(Tree<(bool isFile, int size, string name)> fileSystem)
     {
-        var output = "";
-
-        level.Times(() => output += "  ");
-        
-        output += $"{fileSystem.Data.name} ({fileSystem.Data.size})";
-
-        Log(output);
-
-        foreach (var child in fileSystem.Children)
-        {
-            PrintFileSystem(child, level + 1);
-        }
-    }
-
-    private IEnumerable<(int size, string name)> GetDirSizes(Tree<(bool isFile, int size, string name)> fileSystem)
-    {
-        var result = new List<(int size, string name)>();
+        var result = new List<int>();
         
         foreach (var child in fileSystem.Children)
         {
@@ -152,7 +136,7 @@ public class Day07 : BaseDay
 
         if (!fileSystem.Data.isFile)
         {
-            result.Add((fileSystem.Data.size, fileSystem.Data.name));
+            result.Add(fileSystem.Data.size);
         }
 
         return result;
@@ -160,81 +144,16 @@ public class Day07 : BaseDay
 
     public override string PartTwo(string input)
     {
-        var commands = input.Split('$', StringSplitOptions.RemoveEmptyEntries);
-        var fileSystem = new Tree<(bool isFile, int size, string name)>((false, 0, "/"));
-        var pwd = fileSystem;
-
-        foreach (var command in commands.Skip(1))
-        {
-            var lines = command.Lines().ToList();
-            var cmd = lines.First().Trim();
-            var output = lines.Skip(1);
-
-            if (cmd.StartsWith("cd"))
-            {
-                var dir = cmd.Words().Last();
-
-                if (dir == "..")
-                {
-                    pwd = pwd.Parent;
-                }
-                else
-                {
-                    if (pwd.Children.Any(x => x.Data.name == dir))
-                    {
-                        pwd = pwd.Children.First(x => x.Data.name == dir);
-                    }
-                    else
-                    {
-                        var newDir = new Tree<(bool isFile, int size, string name)>((false, 0, dir));
-                        newDir.Parent = pwd;
-                        pwd = pwd.Children.AddLast(newDir).Value;
-                    }
-                }
-            }
-            else if (cmd.StartsWith("ls"))
-            {
-                foreach (var item in output)
-                {
-                    if (item.StartsWith("dir"))
-                    {
-                        var dir = item.Words().Last();
-
-                        if (!pwd.Children.Any(x => x.Data.name == dir))
-                        {
-                            var newDir = new Tree<(bool isFile, int size, string name)>((false, 0, dir));
-                            newDir.Parent = pwd;
-                            _ = pwd.Children.AddLast(newDir);
-                        }
-                    }
-                    else
-                    {
-                        var words = item.Words();
-                        var size = int.Parse(words.First());
-                        var name = words.Last();
-
-                        if (!pwd.Children.Any(x => x.Data.name == name))
-                        {
-                            var newFile = new Tree<(bool isFile, int size, string name)>((true, size, name));
-                            newFile.Parent = pwd;
-                            _ = pwd.Children.AddLast(newFile);
-                        }
-                    }
-                }
-            }
-        }
-
+        var commands = ParseCommands(input);
+        var fileSystem = BuildFileSystem(commands);
         CalculateDirSizes(fileSystem);
+
         var dirSizes = GetDirSizes(fileSystem);
 
         var totalDisk = 70000000;
         var freeSpace = totalDisk - fileSystem.Data.size;
         var neededSpace = 30000000 - freeSpace;
 
-        var foo = dirSizes.Where(x => x.size >= neededSpace).OrderBy(x => x.size);
-
-        PrintFileSystem(fileSystem, 0);
-        
-        return foo.First().size.ToString();
+        return dirSizes.Where(x => x >= neededSpace).OrderBy(x => x).First().ToString();
     }
 }
