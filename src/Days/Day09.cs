@@ -111,7 +111,7 @@ public class Day09 : BaseDay
         knots.Initialize(new Point(0, 0), 10);
 
         var seen = new HashSet<Point>();
-        _ = seen.Add(knots.Last());
+        seen.Add(knots.Last());
 
         var moves = input.ParseLines(ParseMove);
 
@@ -126,7 +126,7 @@ public class Day09 : BaseDay
                     knots[x] = MoveTail(knots[x], knots[x - 1]);
                 }
 
-                _ = seen.Add(knots.Last());
+                seen.Add(knots.Last());
             }
         }
 
