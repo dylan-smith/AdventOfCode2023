@@ -24,7 +24,18 @@ public class Day10 : BaseDay
 
     public override string PartTwo(string input)
     {
-        return string.Empty;
+        var instructions = input.ParseLines(line => new Instruction(line));
+        var vm = new VirtualMachine();
+        var result = 0;
+
+        vm.OnCycle = cycle =>
+        {
+            
+        };
+
+        vm.RunProgram(instructions);
+
+        return $"{Environment.NewLine}{vm.Display.ToString2()}";
     }
 }
 
@@ -64,9 +75,13 @@ public class VirtualMachine
 {
     public int Register = 1;
     public int Cycle = 1;
+    public char[,] Display;
     
     public void RunProgram(IEnumerable<Instruction> program)
     {
+        Display = new char[40, 6];
+        Display.Initialize('.');
+        
         foreach (var instruction in program)
         {
             instruction.Execute(this);
@@ -80,7 +95,25 @@ public class VirtualMachine
         for (var i = 0; i < count; i++)
         {
             OnCycle(Cycle);
+
+            DrawPixel();
+            
             Cycle++;
+        }
+    }
+
+    public void DrawPixel()
+    {
+        var x = (Cycle - 1) % 40;
+        var y = (Cycle - 1) / 40;
+
+        if (Register >= x - 1 && Register <= x + 1)
+        {
+            Display[x, y] = '#';
+        }
+        else
+        {
+            Display[x, y] = '.';
         }
     }
 }

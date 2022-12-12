@@ -417,4 +417,32 @@ public static class CharGridExtensions
             }
         }
     }
+
+    public static void Initialize<T>(this T[,] grid, T value)
+    {
+        for (var y = 0; y < grid.Height(); y++)
+        {
+            for (var x = 0; x < grid.Width(); x++)
+            {
+                grid[x, y] = value;
+            }
+        }
+    }
+
+    public static string ToString2(this char[,] grid)
+    {
+        var result = new StringBuilder();
+        
+        for (var y = 0; y < grid.Height(); y++)
+        {
+            for (var x = 0; x < grid.Width(); x++)
+            {
+                result.Append(grid[x, y]);
+            }
+
+            result.Append(Environment.NewLine);
+        }
+
+        return result.ToString();
+    }
 }
