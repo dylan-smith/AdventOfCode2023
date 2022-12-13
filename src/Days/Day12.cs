@@ -58,6 +58,18 @@ public class Day12 : BaseDay
 
     public override string PartTwo(string input)
     {
-        return string.Empty;
+        var grid = input.CreateCharGrid();
+
+        var start = grid.GetPoints(x => x == 'S').Single();
+        var target = grid.GetPoints(x => x == 'E').Single();
+
+        grid[start.X, start.Y] = 'a';
+        grid[target.X, target.Y] = 'z';
+
+        var starts = grid.GetPoints(x => x == 'a').ToList();
+
+        var routes = starts.Select(s => FindShortestPath(grid, s, target)).Where(x => x > 0).ToList();
+
+        return routes.Min().ToString();
     }
 }
