@@ -7,107 +7,86 @@ public class Day01 : BaseDay
     {
         var lines = input.Lines();
 
-        var result = lines.Sum(line => ProcessLine(line));
+        var result = lines.Sum(line => GetCalibrationValue(line));
 
         return result.ToString();
     }
 
-    private long ProcessLine(string line)
+    private long GetCalibrationValue(string line)
     {
-        var a = line.First(c => c >= '0' && c <= '9');
-        var b = line.Last(c => c >= '0' && c <= '9');
+        var a = line.First(c => c.IsNumeric());
+        var b = line.Last(c => c.IsNumeric());
 
-        return ((a - '0') * 10) + (b - '0');
+        return a.ParseInt() * 10 + b.ParseInt();
     }
 
     public override string PartTwo(string input)
     {
         var lines = input.Lines();
+        var result = lines.Sum(line => GetCalibrationValue2(line));
 
-        var firstNumbers = lines.Select(line => FindFirstNumber(line));
-        var lastNumbers = lines.Select(line => FindLastNumber(line));
+        return result.ToString();
+    }
 
-        var numbers = new List<long>();
+    private long GetCalibrationValue2(string line)
+    {
+        var a = FindFirstNumber(line);
+        var b = FindLastNumber(line);
 
-        for (var i = 0; i < lines.Count(); i++)
-        {
-            numbers.Add(firstNumbers.ElementAt(i) * 10 + lastNumbers.ElementAt(i));
-        }
-
-        //var numbers = numberLines.Select(line => ProcessLine(line));
-
-        //for (var i = 0; i < lines.Count(); i++)
-        //{
-        //    Log($"{lines.ElementAt(i)} -> {numberLines.ElementAt(i)} -> {numbers.ElementAt(i)}");
-        //}
-
-        return numbers.Sum().ToString();
+        return a * 10 + b;
     }
 
     private int FindFirstNumber(string line)
     {
-        var words = new string[] { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
-
         var pos = 0;
 
         while (pos < line.Length)
         {
-            if (line[pos] >= '0' && line[pos] <= '9')
+            var number = FindNumber(line, pos);
+            if (number >= 0)
             {
-                return int.Parse(line[pos].ToString());
+                return number;
             }
 
-            var word = words.FirstOrDefault(w => line.Substring(pos).StartsWith(w));
-            if (word != null)
-            {
-                return words.IndexOf(word);
-            }
             pos++;
         }
 
-        return 0;
+        throw new Exception("Could not find first number");
     }
 
     private int FindLastNumber(string line)
     {
-        var words = new string[] { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
-
         var pos = line.Length - 1;
 
         while (pos >= 0)
         {
-            if (line[pos] >= '0' && line[pos] <= '9')
+            var number = FindNumber(line, pos);
+            if (number >= 0)
             {
-                return int.Parse(line[pos].ToString());
+                return number;
             }
-
-            var word = words.FirstOrDefault(w => line.Substring(pos).StartsWith(w));
-            if (word != null)
-            {
-                return words.IndexOf(word);
-            }
+           
             pos--;
         }
 
-        return 0;
+        throw new Exception("Could not find last number");
     }
 
-    private string ReplaceWordsWithNumbers(string line)
+    private int FindNumber(string line, int pos)
     {
-        var words = new string[] { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
+        var NUMBERS = new string[] { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
 
-        var pos = 0;
-
-        while (pos < line.Length)
+        if (line[pos].IsNumeric())
         {
-            var word = words.FirstOrDefault(w => line.Substring(pos).StartsWith(w));
-            if (word != null)
-            {
-                line = line.Substring(0, pos) + words.IndexOf(word) + line.Substring(pos + word.Length);
-            }
-            pos++;
+            return line[pos].ParseInt();
         }
 
-        return line;
+        var word = NUMBERS.FirstOrDefault(w => line[pos..].StartsWith(w));
+        if (word != null)
+        {
+            return NUMBERS.IndexOf(word);
+        }
+
+        return -1;
     }
 }
