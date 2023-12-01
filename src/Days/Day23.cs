@@ -1,6 +1,6 @@
 ﻿namespace AdventOfCode.Days;
 
-[Day(2022, 23)]
+[Day(2023, 23)]
 public class Day23 : BaseDay
 {
     public override string PartOne(string input)
