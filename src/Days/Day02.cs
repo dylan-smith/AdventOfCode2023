@@ -25,7 +25,7 @@ public class Day02 : BaseDay
         var games = input.Lines().Select(line => new Game(line));
 
         var minCubes = games.Select(game => game.FindMinimumCubes());
-        var result = minCubes.Sum(x => CalculatePower(x));
+        var result = minCubes.Sum(CalculatePower);
 
         return result.ToString();
     }
