@@ -7,10 +7,12 @@ public class Day02 : BaseDay
     {
         var games = input.Lines().Select(line => new Game(line));
 
-        var bag = new Dictionary<string, long>();
-        bag.Add("red", 12);
-        bag.Add("green", 13);
-        bag.Add("blue", 14);
+        var bag = new Dictionary<string, long>
+        {
+            { "red", 12 },
+            { "green", 13 },
+            { "blue", 14 }
+        };
 
         var possibleGames = games.Where(game => game.IsGamePossible(bag));
         var result = possibleGames.Sum(g => g.Id);
