@@ -1,6 +1,4 @@
-﻿using System.Windows.Shapes;
-
-namespace AdventOfCode.Days;
+﻿namespace AdventOfCode.Days;
 
 [Day(2023, 2)]
 public class Day02 : BaseDay
