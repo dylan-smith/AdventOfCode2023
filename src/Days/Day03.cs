@@ -83,6 +83,43 @@ public class Day03 : BaseDay
 
     public override string PartTwo(string input)
     {
-        return string.Empty;
+        var grid = input.CreateCharGrid();
+
+        var symbols = GetSymbols(grid);
+        var numbers = GetNumbers(grid);
+
+        var gears = symbols.Where(x => IsGear(x, numbers));
+        var result = gears.Sum(g => GetGearRatio(g.location, numbers));
+
+        return result.ToString();
+    }
+
+    private long GetGearRatio(Point location, List<(long number, Point start, Point end)> numbers)
+    {
+        return GetAdjacentNumbers(location, numbers).Multiply(x => x.number);
+    }
+
+    private bool IsGear((char symbol, Point location) symbol, List<(long number, Point start, Point end)> numbers)
+    {
+        var adjacentNumbers = GetAdjacentNumbers(symbol.location, numbers);
+        return adjacentNumbers.Count() == 2;
+    }
+
+    private IEnumerable<(long number, Point start, Point end)> GetAdjacentNumbers(Point location, List<(long number, Point start, Point end)> numbers)
+    {
+        return numbers.Where(n => IsNumberAdjacent(n.start, n.end, location));
+    }
+
+    private bool IsNumberAdjacent(Point start, Point end, Point location)
+    {
+        for (var x = start.X; x <= end.X; x++)
+        {
+            if (new Point(x, start.Y).GetNeighbors(true).Any(n => n == location))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
