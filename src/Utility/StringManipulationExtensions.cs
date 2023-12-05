@@ -244,6 +244,11 @@ namespace AdventOfCode
             return new string(Overlap<char>(a, b).ToArray());
         }
 
+        public static bool IsNullOrWhiteSpace(this string value)
+        {
+            return string.IsNullOrWhiteSpace(value);
+        }
+
         public static IEnumerable<T> Overlap<T>(this IEnumerable<T> a, IEnumerable<T> b) where T : IEquatable<T>
         {
             var result = new List<T>();
