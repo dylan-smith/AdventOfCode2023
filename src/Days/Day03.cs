@@ -8,7 +8,17 @@ public class Day03 : BaseDay
     public override string PartOne(string input)
     {
         var grid = input.CreateCharGrid();
-        var symbols = new List<Point>();
+
+        var symbols = GetSymbols(grid);
+        var numbers = GetNumbers(grid);
+
+        var partNumbers = numbers.Where(n => IsPartNumber(n.start, n.end, symbols)).ToList();
+
+        return partNumbers.Sum(x => x.number).ToString();
+    }
+
+    private List<(long number, Point start, Point end)> GetNumbers(char[,] grid)
+    {
         var numbers = new List<(long number, Point start, Point end)>();
 
         for (var y = 0; y < grid.Height(); y++)
@@ -28,11 +38,6 @@ public class Day03 : BaseDay
                         numbers.Add((long.Parse(curNumber), new Point(x - curNumber.Length, y), new Point(x - 1, y)));
                         curNumber = string.Empty;
                     }
-
-                    if (grid[x, y] != '.')
-                    {
-                        symbols.Add(new Point(x, y));
-                    }
                 }
             }
 
@@ -42,16 +47,32 @@ public class Day03 : BaseDay
             }
         }
 
-        var partNumbers = numbers.Where(n => IsPartNumber(n.start, n.end, symbols)).ToList();
-
-        return partNumbers.Sum(x => x.number).ToString();
+        return numbers;
     }
 
-    private bool IsPartNumber(Point start, Point end, List<Point> symbols)
+    private List<(char symbol, Point location)> GetSymbols(char[,] grid)
+    {
+        var symbols = new List<(char symbol, Point location)>();
+
+        for (var y = 0; y < grid.Height(); y++)
+        {
+            for (var x = 0; x < grid.Width(); x++)
+            {
+                if (!grid[x, y].IsNumeric() && grid[x, y] != '.')
+                {
+                    symbols.Add((grid[x, y], new Point(x, y)));
+                }
+            }
+        }
+
+        return symbols;
+    }
+
+    private bool IsPartNumber(Point start, Point end, List<(char symbol, Point location)> symbols)
     {
         for (var x = start.X; x <= end.X; x++)
         {
-            if (symbols.Any(s => s.GetNeighbors(true).Any(n => n.X == x && n.Y == start.Y)))
+            if (symbols.Any(s => s.location.GetNeighbors(true).Any(n => n.X == x && n.Y == start.Y)))
             {
                 return true;
             }
