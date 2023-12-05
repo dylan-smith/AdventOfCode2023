@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace AdventOfCode
 {
@@ -391,6 +392,16 @@ namespace AdventOfCode
                 'W' => Compass.West,
                 _ => throw new ArgumentException($"Unrecognized character [{c}]")
             };
+        }
+
+        public static long ParseLong(this string value)
+        {
+            return long.Parse(value);
+        }
+
+        public static int ParseInt(this string value)
+        {
+            return int.Parse(value);
         }
     }
 }
