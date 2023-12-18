@@ -145,4 +145,14 @@ public static class EnumerableExtensions
     {
         return b == 0 ? a : GreatestCommonDivisor(b, a % b);
     }
+
+    public static IEnumerable<long> Longs(this IEnumerable<string> list)
+    {
+        return list.Select(long.Parse);
+    }
+
+    public static IEnumerable<int> Integers(this IEnumerable<string> list)
+    {
+        return list.Select(int.Parse);
+    }
 }
