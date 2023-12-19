@@ -98,6 +98,35 @@ public static class PermutationExtensions
         }
     }
 
+    public static IEnumerable<IEnumerable<T>> GetCombinations2<T>(this IEnumerable<T> source, int length)
+    {
+        if (length == 1)
+        {
+            foreach (var x in source)
+            {
+                yield return new List<T>(1) { x };
+            }
+
+            yield break;
+        }
+
+        for (var i = 0; i < source.Count(); i++)
+        {
+            var subCombos = source.GetCombinations2(length - 1);
+
+            foreach (var c in subCombos)
+            {
+                var newCombo = new List<T>(length)
+                {
+                    source.ElementAt(i)
+                };
+                newCombo.AddRange(c);
+
+                yield return newCombo;
+            }
+        }
+    }
+
     private static void Swap<T>(ref T a, ref T b)
     {
         (b, a) = (a, b);
