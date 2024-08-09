@@ -37,27 +37,31 @@ public class Day08 : BaseDay
 
     public override string PartTwo(string input)
     {
-        //var direction = new LinkedList<char>(input.Lines().First()).First;
-        //var nodes = MakeNodesDictionary(input.Lines().Skip(1));
-        ////var nodes = input.Lines().Skip(1).Select(ParseNode).ToList();
+        var direction = new LinkedList<char>(input.Lines().First()).First;
+        var nodes = MakeNodesDictionary(input.Lines().Skip(1));
 
-        //var curNodes = nodes.Where(n => n.Key.EndsWith('A')).ToList();
+        var curNodes = nodes.Where(n => n.Key.EndsWith('A')).Select(n => n.Value).ToList();
         var moves = 0L;
 
-        //while (curNodes.Any(n => !n.Key.EndsWith('Z')))
-        //{
-        //    var newNodes = new List<KeyValuePair<string , (string Left, string Right)>>();
+        while (curNodes.Any(n => !n.Name.EndsWith('Z')))
+        {
+            var newNodes = new List<MapNode>();
 
-        //    foreach (var node in curNodes)
-        //    {
-        //        var newNodeName = UpdatePosition(node.Value, direction.Value);
-        //        newNodes.Add(nodes[newNodeName]);
-        //    }
+            foreach (var node in curNodes)
+            {
+                var newNodeName = UpdatePosition(node, direction.Value);
+                newNodes.Add(nodes[newNodeName]);
+            }
 
-        //    curNodes = newNodes;
-        //    direction = direction.NextCircular();
-        //    moves++;
-        //}
+            curNodes = newNodes;
+            direction = direction.NextCircular();
+            moves++;
+
+            if (moves % 1000000000 == 0)
+            {
+                Log(moves.ToString());
+            }
+        }
 
         return moves.ToString();
     }
