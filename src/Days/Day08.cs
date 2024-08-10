@@ -1,5 +1,4 @@
-﻿
-namespace AdventOfCode.Days;
+﻿namespace AdventOfCode.Days;
 
 [Day(2023, 8)]
 public class Day08 : BaseDay
@@ -28,40 +27,27 @@ public class Day08 : BaseDay
         return value == 'L' ? pos.Left : pos.Right;
     }
 
-    private (string Name, string Left, string Right) ParseNode(string input)
-    {
-        var pieces = input.Split(new string[] { " ", "=", "(", ")", "," }, StringSplitOptions.RemoveEmptyEntries);
-
-        return (pieces[0], pieces[1], pieces[2]);
-    }
-
     public override string PartTwo(string input)
     {
-        var directions = input.Lines().First();
+        var directionList = new LinkedList<char>(input.Lines().First());
         var nodes = MakeNodesDictionary(input.Lines().Skip(1));
-
         var curNodes = nodes.Where(n => n.Key.EndsWith('A')).Select(n => n.Value).ToList();
-
         var zNodes = new List<long>();
 
         for (var n = 0; n < curNodes.Count; n++)
         {
-            var direction = 0;
+            var direction = directionList.First;
             var moves = 0L;
 
-            while (true)
+            while (!curNodes[n].Name.EndsWith('Z'))
             {
-                if (curNodes[n].Name.EndsWith('Z'))
-                {
-                    zNodes.Add(moves);
-                    break;
-                }
-
-                var newNodeName = UpdatePosition(curNodes[n], directions[direction]);
+                var newNodeName = UpdatePosition(curNodes[n], direction.Value);
                 curNodes[n] = nodes[newNodeName];
-                direction = (direction + 1) % directions.Length;
+                direction = direction.NextCircular();
                 moves++;
             }
+
+            zNodes.Add(moves);
         }
 
         return zNodes.LeastCommonMultiple().ToString();
