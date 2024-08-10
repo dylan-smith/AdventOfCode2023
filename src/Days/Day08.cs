@@ -42,23 +42,19 @@ public class Day08 : BaseDay
 
         var curNodes = nodes.Where(n => n.Key.EndsWith('A')).Select(n => n.Value).ToList();
 
-        var cycles = new List<(MapNode node, int direction, long length)>();
-        var zNodes = new List<List<long>>();
+        var zNodes = new List<long>();
 
         for (var n = 0; n < curNodes.Count; n++)
         {
             var direction = 0;
-            var seen = new Dictionary<(MapNode node, int direction), long>();
             var moves = 0L;
-            zNodes.Add(new List<long>());
 
-            while (!seen.ContainsKey((curNodes[n], direction)))
+            while (true)
             {
-                seen.Add((curNodes[n], direction), moves);
-
                 if (curNodes[n].Name.EndsWith('Z'))
                 {
-                    zNodes[n].Add(moves);
+                    zNodes.Add(moves);
+                    break;
                 }
 
                 var newNodeName = UpdatePosition(curNodes[n], directions[direction]);
@@ -66,19 +62,9 @@ public class Day08 : BaseDay
                 direction = (direction + 1) % directions.Length;
                 moves++;
             }
-
-            var firstHit = seen[(curNodes[n], direction)];
-            var cycleLength = moves - firstHit;
-            cycles.Add((curNodes[n], direction, cycleLength));
-
-            Log($"Start Cycle: {firstHit}, Cycle Length: {cycleLength}, Node: {curNodes[n].Name}, Direction: {direction}");
-            foreach (var z in zNodes[n])
-            {
-                Log($"  Z Node: {z}");
-            }
         }
 
-        return string.Empty;
+        return zNodes.LeastCommonMultiple().ToString();
     }
 
     private IDictionary<string, MapNode> MakeNodesDictionary(IEnumerable<string> lines)
