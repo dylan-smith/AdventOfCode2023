@@ -37,33 +37,48 @@ public class Day08 : BaseDay
 
     public override string PartTwo(string input)
     {
-        var direction = new LinkedList<char>(input.Lines().First()).First;
+        var directions = input.Lines().First();
         var nodes = MakeNodesDictionary(input.Lines().Skip(1));
 
         var curNodes = nodes.Where(n => n.Key.EndsWith('A')).Select(n => n.Value).ToList();
-        var moves = 0L;
 
-        while (curNodes.Any(n => !n.Name.EndsWith('Z')))
+        var cycles = new List<(MapNode node, int direction, long length)>();
+        var zNodes = new List<List<long>>();
+
+        for (var n = 0; n < curNodes.Count; n++)
         {
-            var newNodes = new List<MapNode>();
+            var direction = 0;
+            var seen = new Dictionary<(MapNode node, int direction), long>();
+            var moves = 0L;
+            zNodes.Add(new List<long>());
 
-            foreach (var node in curNodes)
+            while (!seen.ContainsKey((curNodes[n], direction)))
             {
-                var newNodeName = UpdatePosition(node, direction.Value);
-                newNodes.Add(nodes[newNodeName]);
+                seen.Add((curNodes[n], direction), moves);
+
+                if (curNodes[n].Name.EndsWith('Z'))
+                {
+                    zNodes[n].Add(moves);
+                }
+
+                var newNodeName = UpdatePosition(curNodes[n], directions[direction]);
+                curNodes[n] = nodes[newNodeName];
+                direction = (direction + 1) % directions.Length;
+                moves++;
             }
 
-            curNodes = newNodes;
-            direction = direction.NextCircular();
-            moves++;
+            var firstHit = seen[(curNodes[n], direction)];
+            var cycleLength = moves - firstHit;
+            cycles.Add((curNodes[n], direction, cycleLength));
 
-            if (moves % 1000000000 == 0)
+            Log($"Start Cycle: {firstHit}, Cycle Length: {cycleLength}, Node: {curNodes[n].Name}, Direction: {direction}");
+            foreach (var z in zNodes[n])
             {
-                Log(moves.ToString());
+                Log($"  Z Node: {z}");
             }
         }
 
-        return moves.ToString();
+        return string.Empty;
     }
 
     private IDictionary<string, MapNode> MakeNodesDictionary(IEnumerable<string> lines)
