@@ -13,8 +13,7 @@ public class Day08 : BaseDay
 
         while (pos.Name != "ZZZ")
         {
-            var newNodeName = UpdatePosition(pos, direction.Value);
-            pos = nodes[newNodeName];
+            pos = nodes[GetNewNodeName(pos, direction.Value)];
             direction = direction.NextCircular();
             moves++;
         }
@@ -22,37 +21,34 @@ public class Day08 : BaseDay
         return moves.ToString();
     }
 
-    private string UpdatePosition(MapNode pos, char value)
-    {
-        return value == 'L' ? pos.Left : pos.Right;
-    }
-
     public override string PartTwo(string input)
     {
         var directionList = new LinkedList<char>(input.Lines().First());
         var nodes = MakeNodesDictionary(input.Lines().Skip(1));
-        var curNodes = nodes.Where(n => n.Key.EndsWith('A')).Select(n => n.Value).ToList();
-        var zNodes = new List<long>();
+        var startNodes = nodes.Where(n => n.Key.EndsWith('A')).Select(n => n.Value).ToList();
+        var zMoves = new List<long>();
 
-        for (var n = 0; n < curNodes.Count; n++)
+        foreach (var startNode in startNodes)
         {
+            var curNode = startNode;
             var direction = directionList.First;
             var moves = 0L;
 
-            while (!curNodes[n].Name.EndsWith('Z'))
+            while (!curNode.Name.EndsWith('Z'))
             {
-                var newNodeName = UpdatePosition(curNodes[n], direction.Value);
-                curNodes[n] = nodes[newNodeName];
+                curNode = nodes[GetNewNodeName(curNode, direction.Value)];
                 direction = direction.NextCircular();
                 moves++;
             }
 
-            zNodes.Add(moves);
+            zMoves.Add(moves);
         }
 
         // This doesn't solve the general case, but it does solve the specific way the input seemed to be structured
-        return zNodes.LeastCommonMultiple().ToString();
+        return zMoves.LeastCommonMultiple().ToString();
     }
+
+    private string GetNewNodeName(MapNode pos, char direction) => direction == 'L' ? pos.Left : pos.Right;
 
     private IDictionary<string, MapNode> MakeNodesDictionary(IEnumerable<string> lines)
     {
