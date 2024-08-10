@@ -50,6 +50,7 @@ public class Day08 : BaseDay
             zNodes.Add(moves);
         }
 
+        // This doesn't solve the general case, but it does solve the specific way the input seemed to be structured
         return zNodes.LeastCommonMultiple().ToString();
     }
 
