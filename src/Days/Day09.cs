@@ -1,4 +1,5 @@
 ﻿
+
 namespace AdventOfCode.Days;
 
 [Day(2023, 9)]
@@ -61,6 +62,31 @@ public class Day09 : BaseDay
 
     public override string PartTwo(string input)
     {
-        return string.Empty;
+        var sensors = input.ParseLines(ParseSensor).ToList();
+        var result = 0L;
+
+        foreach (var sensor in sensors)
+        {
+            var diffList = CreateDiffList(sensor);
+            AddPreviousItemToDiffList(diffList);
+            result += GetFirstItem(diffList);
+        }
+
+        return result.ToString();
+    }
+
+    private long GetFirstItem(List<List<long>> diffList)
+    {
+        return diffList[0].First();
+    }
+
+    private void AddPreviousItemToDiffList(List<List<long>> diffList)
+    {
+        diffList.Last().AddFirst(0);
+
+        for (var i = diffList.Count - 2; i >= 0; i--)
+        {
+            diffList[i].AddFirst(diffList[i].First() - diffList[i + 1].First());
+        }
     }
 }
