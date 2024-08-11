@@ -5,7 +5,7 @@ public class Day07 : BaseDay
 {
     public override string PartOne(string input)
     {
-        var hands = input.ParseLines(ParseHand).ToList();
+        var hands = input.ParseLines(line => ParseHand(line, withWildcards: false)).ToList();
 
         hands.Sort((a, b) => b.strength.CompareTo(a.strength));
 
@@ -21,23 +21,23 @@ public class Day07 : BaseDay
         return result.ToString();
     }
 
-    private (string cards, long bid, long strength) ParseHand(string line)
+    private (string cards, long bid, long strength) ParseHand(string line, bool withWildcards)
     {
         var cards = line.Words().First();
         var bid = long.Parse(line.Words().Last());
-        var strength = GetHandStrength(cards);
+        var strength = GetHandStrength(cards, withWildcards);
 
         return (cards, bid, strength);
     }
 
-    private long GetHandStrength(string cards)
+    private long GetHandStrength(string cards, bool withWildcards)
     {
         var n = 10000000000L;
 
         var cardCounts = GetCardCounts(cards);
         var handType = 0L;
 
-        if (cardCounts.ContainsKey('J') && cardCounts['J'] > 0)
+        if (withWildcards && cardCounts.ContainsKey('J') && cardCounts['J'] > 0)
         {
             var wildcards = "23456789TQKA".GetCombinations2(cardCounts['J']);
 
@@ -190,7 +190,7 @@ public class Day07 : BaseDay
 
     public override string PartTwo(string input)
     {
-        var hands = input.ParseLines(ParseHand).ToList();
+        var hands = input.ParseLines(line => ParseHand(line, withWildcards: true)).ToList();
 
         hands.Sort((a, b) => b.strength.CompareTo(a.strength));
 

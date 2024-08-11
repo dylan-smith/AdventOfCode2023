@@ -135,9 +135,16 @@ namespace AdventOfCode
             var testName = fileName.Substring(year.ToString().Length + day.ToString().Length + 4);
 
             var split = contents.LastIndexOf(Environment.NewLine);
+            var lineEndingLength = Environment.NewLine.Length;
+
+            if (split == -1)
+            {
+                split = contents.LastIndexOf('\n');
+                lineEndingLength = 1;
+            }
 
             var input = contents.Substring(0, split);
-            var output = contents.Substring(split + Environment.NewLine.Length);
+            var output = contents.Substring(split + lineEndingLength);
 
             var runner = GetDayInstance(new DayAttribute(year, day));
             runner.Log = NullLogger;
