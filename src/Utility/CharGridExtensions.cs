@@ -5,17 +5,6 @@ namespace AdventOfCode;
 
 public static class CharGridExtensions
 {
-    public static IEnumerable<Point> GetPoints<T>(this T[,] grid)
-    {
-        for (var y = 0; y < grid.GetLength(1); y++)
-        {
-            for (var x = 0; x < grid.GetLength(0); x++)
-            {
-                yield return new Point(x, y);
-            }
-        }
-    }
-
     public static char[,] CreateCharGrid(this string input)
     {
         var lines = input.Lines().ToList();
@@ -65,36 +54,63 @@ public static class CharGridExtensions
         return sb.ToString();
     }
 
-    public static IEnumerable<Point> GetPoints<T>(this T[,] grid, T match)
+    public static IEnumerable<Point> GetPoints<T>(this T[,] grid)
     {
-        return GetPoints(grid).Where(p => EqualityComparer<T>.Default.Equals(grid[p.X, p.Y], match));
-    }
-
-    public static IEnumerable<Point> GetPoints(this char[,] grid, char match)
-    {
-        return GetPoints(grid).Where(p => grid[p.X, p.Y] == match);
-    }
-
-    public static IEnumerable<Point> GetPoints(this int[,] grid, int match)
-    {
-        return GetPoints(grid).Where(p => grid[p.X, p.Y] == match);
-    }
-
-    public static IEnumerable<Point> GetPoints<T>(this T[,] grid, Func<T, bool> match)
-    {
-        return GetPoints(grid).Where(p => match(grid[p.X, p.Y]));
-    }
-
-    public static IEnumerable<Point> GetPoints<T>(this T[,] grid, Func<Point, bool> match)
-    {
-        return GetPoints(grid).Where(match);
-    }
-
-    public static void Replace<T>(this T[,] grid, T match, T replace)
-    {
-        foreach (var p in grid.GetPoints(match))
+        for (var y = 0; y < grid.GetLength(1); y++)
         {
-            grid[p.X, p.Y] = replace;
+            for (var x = 0; x < grid.GetLength(0); x++)
+            {
+                yield return new Point(x, y);
+            }
+        }
+    }
+
+    public static IEnumerable<Point> GetPoints<T>(this T[,] grid, T filter)
+    {
+        return GetPoints(grid).Where(p => EqualityComparer<T>.Default.Equals(grid[p.X, p.Y], filter));
+    }
+
+    public static IEnumerable<Point> GetPoints(this char[,] grid, char filter)
+    {
+        return GetPoints(grid).Where(p => grid[p.X, p.Y] == filter);
+    }
+
+    public static IEnumerable<Point> GetPoints(this int[,] grid, int filter)
+    {
+        return GetPoints(grid).Where(p => grid[p.X, p.Y] == filter);
+    }
+
+    public static IEnumerable<Point> GetPoints<T>(this T[,] grid, Func<T, bool> filter)
+    {
+        return GetPoints(grid).Where(p => filter(grid[p.X, p.Y]));
+    }
+
+    public static IEnumerable<Point> GetPoints<T>(this T[,] grid, Func<Point, bool> filter)
+    {
+        return GetPoints(grid).Where(filter);
+    }
+
+    public static void Replace<T>(this T[,] grid, T filter, T value)
+    {
+        foreach (var p in grid.GetPoints(filter))
+        {
+            grid[p.X, p.Y] = value;
+        }
+    }
+
+    public static void Replace<T>(this T[,] grid, Func<T, bool> filter, T value)
+    {
+        foreach (var p in grid.GetPoints(filter))
+        {
+            grid[p.X, p.Y] = value;
+        }
+    }
+
+    public static void Replace<T>(this T[,] grid, Func<Point, bool> filter, T value)
+    {
+        foreach (var p in grid.GetPoints(filter))
+        {
+            grid[p.X, p.Y] = value;
         }
     }
 
@@ -429,7 +445,7 @@ public static class CharGridExtensions
         }
     }
 
-    public static string ToString2(this char[,] grid)
+    public static string ToStringGrid(this char[,] grid)
     {
         var result = new StringBuilder();
         

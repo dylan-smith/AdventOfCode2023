@@ -1,4 +1,6 @@
 ﻿using System.Drawing;
+using System.Text.RegularExpressions;
+using System.Windows.Controls;
 
 namespace AdventOfCode.Days;
 
@@ -29,9 +31,11 @@ public class Day10 : BaseDay
             {
                 pipePoints.Add(p, distance);
             }
-
             prevPoints = newPoints;
         }
+
+        map.Replace(p => !pipePoints.ContainsKey(p), '.');
+        Log(map.ToStringGrid());
 
         return pipePoints.Max(x => x.Value).ToString();
     }
@@ -154,7 +158,7 @@ public class Day10 : BaseDay
 
         if (pipe1 == 'J')
         {
-            if (pipe2 == '-' && p2.Y == p1.Y && p2.X > p1.X)
+            if (pipe2 == '-' && p2.Y == p1.Y && p2.X < p1.X)
             {
                 return true;
             }
