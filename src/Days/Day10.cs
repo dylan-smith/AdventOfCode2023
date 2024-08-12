@@ -22,53 +22,48 @@ public class Day10 : BaseDay
         map.Replace(p => !pipePoints.ContainsKey(p), '.');
         map.Replace('S', '|');
 
-        var nestCount = 0L;
-        var nestPoints = new List<Point>();
+        var nestPoints = new HashSet<Point>();
 
-        Log(map.ToStringGrid());
-
-        foreach (var p in map.GetPoints())
+        foreach (var p in map.GetPoints(a => map[a.X, a.Y] == '.'))
         {
-            if (map[p.X, p.Y] == '.')
+            if (!nestPoints.Contains(p))
             {
-                if (IsContainedByPipe(p, map))
-                {
-                    nestCount++;
-                    nestPoints.Add(p);
-                }
+                nestPoints.AddRange(IsContainedByPipe(p, map));
             }
         }
 
-        return nestCount.ToString();
+        return nestPoints.Count.ToString();
     }
 
-    private bool IsContainedByPipe(Point p, char[,] map)
+    private IEnumerable<Point> IsContainedByPipe(Point p, char[,] map)
     {
-        var accessiblePoints = new HashSet<(Point Point, bool Bottom)>();
-
-        var newPoints = new List<(Point Point, bool Bottom)>
+        var accessiblePoints = new HashSet<(Point Point, bool Bottom)>()
         {
             (p, false)
         };
-        accessiblePoints.Add((p, false));
 
-        while (newPoints.Any())
+        var prevPoints = new List<(Point Point, bool Bottom)>
+        {
+            (p, false)
+        };
+
+        while (prevPoints.Any())
         {
             var nextPoints = new List<(Point Point, bool Bottom)>();
 
-            foreach (var newPoint in newPoints)
+            foreach (var prevPoint in prevPoints)
             {
-                var neighbors = newPoint.Point.GetNeighbors(includeDiagonals: false);
+                var neighbors = prevPoint.Point.GetNeighbors(includeDiagonals: false);
 
                 foreach (var neighbor in neighbors)
                 {
-                    var (valid, bottom) = IsValidMove(newPoint, neighbor, map);
+                    var (valid, bottom) = IsValidMove(prevPoint, neighbor, map);
 
                     if (valid)
                     {
                         if (!map.IsValidPoint(neighbor))
                         {
-                            return false;
+                            return new List<Point>();
                         }
 
                         if (accessiblePoints.Add((neighbor, bottom)))
@@ -79,10 +74,12 @@ public class Day10 : BaseDay
                 }
             }
 
-            newPoints = nextPoints;
+            prevPoints = nextPoints;
         }
 
-        return true;
+        return accessiblePoints.Where(x => map[x.Point.X, x.Point.Y] == '.')
+                               .Select(x => x.Point)
+                               .ToList();
     }
 
     private (bool valid, bool bottom) IsValidMove((Point Point, bool Bottom) start, Point end, char[,] map)
