@@ -46,8 +46,10 @@ public class Day10 : BaseDay
     {
         var accessiblePoints = new HashSet<(Point Point, bool Bottom)>();
 
-        var newPoints = new List<(Point Point, bool Bottom)>();
-        newPoints.Add((p, false));
+        var newPoints = new List<(Point Point, bool Bottom)>
+        {
+            (p, false)
+        };
         accessiblePoints.Add((p, false));
 
         while (newPoints.Any())
@@ -78,31 +80,6 @@ public class Day10 : BaseDay
             }
 
             newPoints = nextPoints;
-
-            //if (p.X == 14 && p.Y == 3)
-            //{
-            //    var map2 = map.Clone((x, y, c) =>
-            //    {
-            //        if (accessiblePoints.Any(p => p.Point.X == x && p.Point.Y == y))
-            //        {
-            //            if (accessiblePoints.Any(p => p.Point.X == x && p.Point.Y == y && p.Bottom) && accessiblePoints.Any(p => p.Point.X == x && p.Point.Y == y && !p.Bottom))
-            //            {
-            //                return 'X';
-            //            }
-
-            //            if (accessiblePoints.Any(p => p.Point.X == x && p.Point.Y == y && p.Bottom))
-            //            {
-            //                return 'B';
-            //            }
-
-            //            return 'T';
-            //        }
-
-            //        return c;
-            //    });
-            //    Log("===================");
-            //    Log(map2.ToStringGrid());
-            //}
         }
 
         return true;
