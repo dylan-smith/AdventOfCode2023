@@ -123,14 +123,131 @@ public class Day12 : BaseDay
     {
         var springs = line.Split(' ')[0];
         var groups = line.Split(' ')[1].Integers().ToList();
-        var result = springs.Select(c => c switch { '.' => SpringStatus.Operational, '#' => SpringStatus.Damaged, _ => SpringStatus.Unknown}).ToList();
+        var result = springs.Select(c => c switch { '.' => SpringStatus.Operational, '#' => SpringStatus.Damaged, _ => SpringStatus.Unknown }).ToList();
 
         return (result, groups);
     }
 
     public override string PartTwo(string input)
     {
-        return string.Empty;
+        var rows = input.ParseLines(ParseLine).ToList();
+        rows = rows.Select(r => ExpandRow(r)).ToList();
+        var result = 0L;
+
+        foreach (var (Springs, Groups) in rows)
+        {
+            var possibilities = GeneratePossibilities2(Groups, Springs.Count);
+
+            foreach (var possibility in possibilities)
+            {
+                if (IsValid2(possibility, Springs))
+                {
+                    result++;
+                }
+            }
+        }
+
+        return result.ToString();
+    }
+
+    private bool IsValid2(List<SpringStatus> possibility, List<SpringStatus> springs)
+    {
+        for (var i = 0; i < springs.Count; i++)
+        {
+            if (springs[i] != SpringStatus.Unknown && possibility[i] != springs[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private IEnumerable<List<SpringStatus>> GeneratePossibilities2(IEnumerable<int> groups, int length)
+    {
+        if (groups.Count() == 1)
+        {
+            for (var offset = 0; offset <= length - groups.First(); offset++)
+            {
+                var springs = new List<SpringStatus>();
+
+                for (var i = 0; i < offset; i++)
+                {
+                    springs.Add(SpringStatus.Operational);
+                }
+
+                for (var i = 0; i < groups.First(); i++)
+                {
+                    springs.Add(SpringStatus.Damaged);
+                }
+
+                for (var i = 0; i < length - (offset + groups.First()); i++)
+                {
+                    springs.Add(SpringStatus.Operational);
+                }
+
+                yield return springs;
+            }
+        }
+        else
+        {
+            var maxOffset = length - (groups.Sum() + groups.Count() - 1);
+
+            for (var offset = 0; offset <= maxOffset; offset++)
+            {
+                var springs = new List<SpringStatus>();
+
+                for (var i = 0; i < offset; i++)
+                {
+                    springs.Add(SpringStatus.Operational);
+                }
+
+                for (var i = 0; i < groups.First(); i++)
+                {
+                    springs.Add(SpringStatus.Damaged);
+                }
+
+                springs.Add(SpringStatus.Operational);
+
+                var newGroups = groups.Skip(1);
+                var newLength = length - springs.Count;
+
+                var endings = GeneratePossibilities2(newGroups, newLength);
+
+                foreach (var ending in endings)
+                {
+                    var newSprings = new List<SpringStatus>(springs);
+                    newSprings.AddRange(ending);
+
+                    yield return newSprings;
+                }
+            }
+        }
+    }
+
+    private (List<SpringStatus> Springs, List<int> Groups) ExpandRow((List<SpringStatus> Springs, List<int> Groups) row)
+    {
+        var Springs = new List<SpringStatus>();
+
+        Springs.AddRange(row.Springs);
+        Springs.Add(SpringStatus.Unknown);
+        Springs.AddRange(row.Springs);
+        Springs.Add(SpringStatus.Unknown);
+        Springs.AddRange(row.Springs);
+        Springs.Add(SpringStatus.Unknown);
+        Springs.AddRange(row.Springs);
+        Springs.Add(SpringStatus.Unknown);
+        Springs.AddRange(row.Springs);
+
+        var Groups = new List<int>();
+
+        Groups.AddRange(row.Groups);
+        Groups.AddRange(row.Groups);
+        Groups.AddRange(row.Groups);
+        Groups.AddRange(row.Groups);
+        Groups.AddRange(row.Groups);
+
+        return (Springs, Groups);
     }
 
     private enum SpringStatus
