@@ -99,5 +99,44 @@ namespace AdventOfCode
         public static double CalcDistance(this Point p, Point to) => Math.Sqrt(Math.Pow(p.X - to.X, 2) + Math.Pow(p.Y - to.Y, 2));
 
         public static double CalcSlope(this Point p, Point to) => (double)(p.Y - to.Y) / (double)(p.X - to.X);
+
+        public static bool IsInPolygon(this Point point, IEnumerable<Point> polygon)
+        {
+            bool result = false;
+            var a = polygon.Last();
+
+            foreach (var b in polygon)
+            {
+                if ((b.X == point.X) && (b.Y == point.Y))
+                {
+                    return true;
+                }
+
+                if ((b.Y == a.Y) && (point.Y == a.Y))
+                {
+                    if ((a.X <= point.X) && (point.X <= b.X))
+                    {
+                        return true;
+                    }
+
+                    if ((b.X <= point.X) && (point.X <= a.X))
+                    {
+                        return true;
+                    }
+                }
+
+                if (((b.Y < point.Y) && (a.Y >= point.Y)) || ((a.Y < point.Y) && (b.Y >= point.Y)))
+                {
+                    if (b.X + ((point.Y - b.Y) / (a.Y - b.Y) * (a.X - b.X)) <= point.X)
+                    {
+                        result = !result;
+                    }
+                }
+
+                a = b;
+            }
+
+            return result;
+        }
     }
 }
