@@ -461,4 +461,60 @@ public static class CharGridExtensions
 
         return result.ToString();
     }
+
+    public static T[,] InsertRow<T>(this T[,] grid, int after, T value)
+    {
+        var result = new T[grid.Width(), grid.Height() + 1];
+
+        for (var y = 0; y <= after; y++)
+        {
+            for (var x = 0; x < grid.Width(); x++)
+            {
+                result[x, y] = grid[x, y];
+            }
+        }
+
+        for (var x = 0; x < grid.Width(); x++)
+        {
+            result[x, after + 1] = value;
+        }
+
+        for (var y = after + 2; y < result.Height(); y++)
+        {
+            for (var x = 0; x < grid.Width(); x++)
+            {
+                result[x, y] = grid[x, y - 1];
+            }
+        }
+
+        return result;
+    }
+
+    public static T[,] InsertCol<T>(this T[,] grid, int after, T value)
+    {
+        var result = new T[grid.Width() + 1, grid.Height()];
+
+        for (var x = 0; x <= after; x++)
+        {
+            for (var y = 0; y < grid.Height(); y++)
+            {
+                result[x, y] = grid[x, y];
+            }
+        }
+
+        for (var y = 0; y < grid.Height(); y++)
+        {
+            result[after + 1, y] = value;
+        }
+
+        for (var x = after + 2; x < result.Width(); x++)
+        {
+            for (var y = 0; y < grid.Height(); y++)
+            {
+                result[x, y] = grid[x - 1, y];
+            }
+        }
+
+        return result;
+    }
 }
