@@ -105,35 +105,45 @@ namespace AdventOfCode
             bool result = false;
             var a = polygon.Last();
 
+            var ax = a.X;
+            var ay = a.Y;
+            var px = point.X;
+            var py = point.Y;
+
             foreach (var b in polygon)
             {
-                if ((b.X == point.X) && (b.Y == point.Y))
+                var bx = b.X;
+                var by = b.Y;
+
+                if ((bx == px) && (by == py))
                 {
                     return true;
                 }
 
-                if ((b.Y == a.Y) && (point.Y == a.Y))
+                if ((by == ay) && (py == ay))
                 {
-                    if ((a.X <= point.X) && (point.X <= b.X))
+                    if ((ax <= px) && (px <= bx))
                     {
                         return true;
                     }
 
-                    if ((b.X <= point.X) && (point.X <= a.X))
+                    if ((bx <= px) && (px <= ax))
                     {
                         return true;
                     }
                 }
 
-                if (((b.Y < point.Y) && (a.Y >= point.Y)) || ((a.Y < point.Y) && (b.Y >= point.Y)))
+                if (((by < py) && (ay >= py)) || ((ay < py) && (by >= py)))
                 {
-                    if (b.X + ((point.Y - b.Y) / (a.Y - b.Y) * (a.X - b.X)) <= point.X)
+                    if (bx + ((py - by) / (ay - by) * (ax - bx)) <= px)
                     {
                         result = !result;
                     }
                 }
 
-                a = b;
+                //a = b;
+                ax = bx;
+                ay = by;
             }
 
             return result;
