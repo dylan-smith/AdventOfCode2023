@@ -63,4 +63,19 @@ public static class ListExtensions
     {
         list.Insert(0, item);
     }
+
+    public static List<(T A, T B)> GetPairs<T>(this List<T> list)
+    {
+        var result = new List<(T A, T B)>();
+
+        for (var i = 0; i < list.Count - 1; i++)
+        {
+            for (var j = i + 1; j < list.Count; j++)
+            {
+                result.Add((list[i], list[j]));
+            }
+        }
+
+        return result;
+    }
 }
