@@ -32,4 +32,24 @@ public static class NumericExtensions
             action(i);
         }
     }
+
+    public static string ToBinary(this int number)
+    {
+        return Convert.ToString(number, 2);
+    }
+
+    public static string ToBinary(this long number)
+    {
+        return Convert.ToString(number, 2);
+    }
+
+    public static string ToHex(this int number)
+    {
+        return Convert.ToString(number, 16);
+    }
+
+    public static string ToHex(this long number)
+    {
+        return Convert.ToString(number, 16);
+    }
 }
