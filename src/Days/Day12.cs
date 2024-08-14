@@ -1,5 +1,9 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks.Sources;
+using System.Windows.Navigation;
 
 namespace AdventOfCode.Days;
 
@@ -10,6 +14,7 @@ public class Day12 : BaseDay
     private List<int> _groups;
     private List<SpringStatus> _springs;
     private long _validCount = 0L;
+    private Dictionary<(int position, int group, int damagedCount), long> _seen = new Dictionary<(int position, int group, int damagedCount), long>();
 
     public override string PartOne(string input)
     {
@@ -48,6 +53,7 @@ public class Day12 : BaseDay
             _springs = Springs;
             _sharedMemory = Springs.ToArray();
 
+            _seen = new Dictionary<(int position, int group, int damagedCount), long>();
             result += CountSolutions2(position: 0, group: 0, damagedCount: 0);
         }
 
@@ -56,31 +62,42 @@ public class Day12 : BaseDay
 
     private long CountSolutions2(int position, int group, int damagedCount)
     {
+        var result = 0L;
+
+        if (_seen.TryGetValue((position, group, damagedCount), out var value))
+        {
+            return value;
+        }
+
         if (damagedCount > 0 && group == _groups.Count)
         {
+            _seen.Add((position, group, damagedCount), 0);
             return 0;
         }
 
         if (damagedCount > 0 && damagedCount > _groups[group])
         {
+            _seen.Add((position, group, damagedCount), 0);
             return 0;
         }
 
         if (position >= _sharedMemory.Length)
         {
-            if (damagedCount > 0 && damagedCount == _groups[group])
+            if (damagedCount > 0 && damagedCount == _groups[group] && group == (_groups.Count - 1))
             {
-                group++;
-            }
-
-            if (group == _groups.Count)
-            {
+                _seen.Add((position, group, damagedCount), 1);
                 return 1;
             }
 
+            if (damagedCount == 0 && group == _groups.Count)
+            {
+                _seen.Add((position, group, damagedCount), 1);
+                return 1;
+            }
+
+            _seen.Add((position, group, damagedCount), 0);
             return 0;
         }
-
 
         var current = _sharedMemory[position];
 
@@ -88,38 +105,48 @@ public class Day12 : BaseDay
         {
             if (current == SpringStatus.Damaged)
             {
-                return CountSolutions2(position + 1, group, damagedCount + 1);
+                result = CountSolutions2(position + 1, group, damagedCount + 1);
+                _seen.Add((position, group, damagedCount), result);
+                return result;
             }
 
             if (damagedCount > 0 && current == SpringStatus.Operational && damagedCount < _groups[group])
             {
+                _seen.Add((position, group, damagedCount), 0);
                 return 0;
             }
 
             if (damagedCount > 0 && damagedCount == _groups[group])
             {
-                group++;
-                damagedCount = 0;
+                result = CountSolutions2(position + 1, group + 1, 0);
+                _seen.Add((position, group, damagedCount), result);
+                return result;
             }
 
-            return CountSolutions2(position + 1, group, damagedCount);
+            result =  CountSolutions2(position + 1, group, damagedCount);
+            _seen.Add((position, group, damagedCount), result);
+            return result;
         }
-
-        var result = 0L;
 
         if (damagedCount > 0 && damagedCount < _groups[group])
         {
-            return CountSolutions2(position + 1, group, damagedCount + 1);
+            result =  CountSolutions2(position + 1, group, damagedCount + 1);
+            _seen.Add((position, group, damagedCount), result);
+            return result;
         }
 
         if (damagedCount > 0 && damagedCount == _groups[group])
         {
-            return CountSolutions2(position + 1, group + 1, 0);
+            result = CountSolutions2(position + 1, group + 1, 0);
+            _seen.Add((position, group, damagedCount), result);
+            return result;
         }
 
         if (group == _groups.Count)
         {
-            return CountSolutions2(position + 1, group, 0);
+            result = CountSolutions2(position + 1, group, 0);
+            _seen.Add((position, group, damagedCount), result);
+            return result;
         }
 
         result += CountSolutions2(position + 1, group, 0);
@@ -129,6 +156,7 @@ public class Day12 : BaseDay
             result += CountSolutions2(position + 1, group, 1);
         }
 
+        _seen.Add((position, group, damagedCount), result);
         return result;
     }
 
@@ -206,18 +234,18 @@ public class Day12 : BaseDay
         springs.AddRange(row.Springs);
         springs.Add(SpringStatus.Unknown);
         springs.AddRange(row.Springs);
-        //springs.Add(SpringStatus.Unknown);
-        //springs.AddRange(row.Springs);
-        //springs.Add(SpringStatus.Unknown);
-        //springs.AddRange(row.Springs);
+        springs.Add(SpringStatus.Unknown);
+        springs.AddRange(row.Springs);
+        springs.Add(SpringStatus.Unknown);
+        springs.AddRange(row.Springs);
 
         var groups = new List<int>();
 
         groups.AddRange(row.Groups);
         groups.AddRange(row.Groups);
         groups.AddRange(row.Groups);
-        //groups.AddRange(row.Groups);
-        //groups.AddRange(row.Groups);
+        groups.AddRange(row.Groups);
+        groups.AddRange(row.Groups);
 
         return (springs, groups);
     }
