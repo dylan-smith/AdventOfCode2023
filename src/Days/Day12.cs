@@ -11,119 +11,19 @@ public class Day12 : BaseDay
     public override string PartOne(string input)
     {
         var rows = input.ParseLines(ParseLine).ToList();
-        var result = 0L;
 
         foreach (var (Springs, Groups) in rows)
         {
-            var possibilities = GeneratePossibilities(Springs);
-
-            foreach (var possibility in possibilities)
-            {
-                if (IsValid(possibility, Groups))
-                {
-                    result++;
-                }
-            }
+            _groups = Groups;
+            _springs = Springs;
+            _sharedMemory = new SpringStatus[Springs.Count];
+            
+            CountSolutions(Springs.Count, Groups.Count);
         }
 
-        return result.ToString();
+        return _validCount.ToString();
     }
-
-    private bool IsValid(List<SpringStatus> possibility, List<int> groups)
-    {
-        var g = 0;
-        var count = 0;
-        var active = false;
-
-        for (int i = 0; i < possibility.Count; i++)
-        {
-            if (possibility[i] == SpringStatus.Damaged)
-            {
-                active = true;
-                count++;
-
-                if (g >= groups.Count)
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (active)
-                {
-                    if (count != groups[g])
-                    {
-                        return false;
-                    }
-
-                    active = false;
-                    count = 0;
-                    g++;
-                }
-            }
-        }
-
-        if (active)
-        {
-            if (count != groups[g])
-            {
-                return false;
-            }
-
-            g++;
-        }
-
-        if (g == groups.Count)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private IEnumerable<List<SpringStatus>> GeneratePossibilities(List<SpringStatus> springs)
-    {
-        var unknownIndexes = GetUnknownIndexes(springs);
-        var unknownCount = unknownIndexes.Count;
-
-        for (var i = 0; i < Math.Pow(2, unknownCount); i++)
-        {
-            var binary = i.ToBinary();
-            binary = binary.PadLeft(unknownCount, '0');
-
-            var result = new List<SpringStatus>(springs);
-
-            for (var pos = 0; pos < unknownCount; pos++)
-            {
-                if (binary[pos] == '1')
-                {
-                    result[unknownIndexes[pos]] = SpringStatus.Damaged;
-                }
-                else
-                {
-                    result[unknownIndexes[pos]] = SpringStatus.Operational;
-                }
-            }
-
-            yield return result;
-        }
-    }
-
-    private List<int> GetUnknownIndexes(List<SpringStatus> springs)
-    {
-        var result = new List<int>();
-
-        for (var i = 0; i < springs.Count; i++)
-        {
-            if (springs[i] == SpringStatus.Unknown)
-            {
-                result.Add(i);
-            }
-        }
-
-        return result;
-    }
-
+    
     private (List<SpringStatus> Springs, List<int> Groups) ParseLine(string line)
     {
         var springs = line.Split(' ')[0];
@@ -137,42 +37,20 @@ public class Day12 : BaseDay
     {
         var rows = input.ParseLines(ParseLine).ToList();
         rows = rows.Select(r => ExpandRow(r)).ToList();
-        var result = 0L;
 
         foreach (var (Springs, Groups) in rows)
         {
             _groups = Groups;
             _springs = Springs;
-
             _sharedMemory = new SpringStatus[Springs.Count];
-            GeneratePossibilities2(Springs.Count, Groups.Count);
-
-            //foreach (var possibility in possibilities)
-            //{
-            //    if (IsValid2(_sharedMemory, Springs))
-            //    {
-            //        result++;
-            //    }
-            //}
+            
+            CountSolutions(Springs.Count, Groups.Count);
         }
 
         return _validCount.ToString();
     }
 
-    private bool IsValid2(SpringStatus[] possibility, List<SpringStatus> springs)
-    {
-        for (var i = 0; i < springs.Count; i++)
-        {
-            if (springs[i] != SpringStatus.Unknown && possibility[i] != springs[i])
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private void IsValid3()
+    private void IsValid()
     {
         for (var i = 0; i < _springs.Count; i++)
         {
@@ -185,7 +63,7 @@ public class Day12 : BaseDay
         _validCount++;
     }
 
-    private void GeneratePossibilities2(int springsCount, int groupsCount)
+    private void CountSolutions(int springsCount, int groupsCount)
     {
         var springsSkip = _sharedMemory.Length - springsCount;
 
@@ -196,7 +74,7 @@ public class Day12 : BaseDay
                 _sharedMemory[springsSkip + i] = SpringStatus.Operational;
             }
 
-            IsValid3();
+            IsValid();
         }
         else
         {
@@ -232,7 +110,7 @@ public class Day12 : BaseDay
 
                 var newLength = springsCount - pos;
 
-                GeneratePossibilities2(newLength, groupsCount - 1);
+                CountSolutions(newLength, groupsCount - 1);
             }
         }
     }
