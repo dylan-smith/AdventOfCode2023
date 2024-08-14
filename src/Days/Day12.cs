@@ -1,4 +1,7 @@
-﻿namespace AdventOfCode.Days;
+﻿
+using System.ComponentModel.DataAnnotations;
+
+namespace AdventOfCode.Days;
 
 [Day(2023, 12)]
 public class Day12 : BaseDay
@@ -17,13 +20,13 @@ public class Day12 : BaseDay
             _groups = Groups;
             _springs = Springs;
             _sharedMemory = new SpringStatus[Springs.Count];
-            
+
             CountSolutions(Springs.Count, Groups.Count);
         }
 
         return _validCount.ToString();
     }
-    
+
     private (List<SpringStatus> Springs, List<int> Groups) ParseLine(string line)
     {
         var springs = line.Split(' ')[0];
@@ -37,17 +40,96 @@ public class Day12 : BaseDay
     {
         var rows = input.ParseLines(ParseLine).ToList();
         rows = rows.Select(r => ExpandRow(r)).ToList();
+        var result = 0L;
 
         foreach (var (Springs, Groups) in rows)
         {
             _groups = Groups;
             _springs = Springs;
-            _sharedMemory = new SpringStatus[Springs.Count];
-            
-            CountSolutions(Springs.Count, Groups.Count);
+            _sharedMemory = Springs.ToArray();
+
+            result += CountSolutions2(position: 0, group: 0, damagedCount: 0);
         }
 
-        return _validCount.ToString();
+        return result.ToString();
+    }
+
+    private long CountSolutions2(int position, int group, int damagedCount)
+    {
+        if (damagedCount > 0 && group == _groups.Count)
+        {
+            return 0;
+        }
+
+        if (damagedCount > 0 && damagedCount > _groups[group])
+        {
+            return 0;
+        }
+
+        if (position >= _sharedMemory.Length)
+        {
+            if (damagedCount > 0 && damagedCount == _groups[group])
+            {
+                group++;
+            }
+
+            if (group == _groups.Count)
+            {
+                return 1;
+            }
+
+            return 0;
+        }
+
+
+        var current = _sharedMemory[position];
+
+        if (current != SpringStatus.Unknown)
+        {
+            if (current == SpringStatus.Damaged)
+            {
+                return CountSolutions2(position + 1, group, damagedCount + 1);
+            }
+
+            if (damagedCount > 0 && current == SpringStatus.Operational && damagedCount < _groups[group])
+            {
+                return 0;
+            }
+
+            if (damagedCount > 0 && damagedCount == _groups[group])
+            {
+                group++;
+                damagedCount = 0;
+            }
+
+            return CountSolutions2(position + 1, group, damagedCount);
+        }
+
+        var result = 0L;
+
+        if (damagedCount > 0 && damagedCount < _groups[group])
+        {
+            return CountSolutions2(position + 1, group, damagedCount + 1);
+        }
+
+        if (damagedCount > 0 && damagedCount == _groups[group])
+        {
+            return CountSolutions2(position + 1, group + 1, 0);
+        }
+
+        if (group == _groups.Count)
+        {
+            return CountSolutions2(position + 1, group, 0);
+        }
+
+        result += CountSolutions2(position + 1, group, 0);
+
+        if (group < _groups.Count)
+        {
+            result += CountSolutions2(position + 1, group, 1);
+        }
+
+        return result;
     }
 
     private void IsValid()
