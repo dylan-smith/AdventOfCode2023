@@ -188,36 +188,22 @@ public class Day12 : BaseDay
     private void GeneratePossibilities2(int springsCount, int groupsCount)
     {
         var springsSkip = _sharedMemory.Length - springsCount;
-        var groupsSkip = _groups.Count - groupsCount;
-        var currentGroup = _groups[groupsSkip];
 
-        if (groupsCount == 1)
+        if (groupsCount == 0)
         {
-            for (var offset = 0; offset <= springsCount - currentGroup; offset++)
+            for (var i = 0; i < springsCount; i++)
             {
-                var pos = 0;
-
-                for (var i = 0; i < offset; i++)
-                {
-                    _sharedMemory[springsSkip + pos++] = SpringStatus.Operational;
-                }
-
-                for (var i = 0; i < currentGroup; i++)
-                {
-                    _sharedMemory[springsSkip + pos++] = SpringStatus.Damaged;
-                }
-
-                for (var i = 0; i < springsCount - (offset + currentGroup); i++)
-                {
-                    _sharedMemory[springsSkip + pos++] = SpringStatus.Operational;
-                }
-
-                IsValid3();
+                _sharedMemory[springsSkip + i] = SpringStatus.Operational;
             }
+
+            IsValid3();
         }
         else
         {
+            var groupsSkip = _groups.Count - groupsCount;
+            var currentGroup = _groups[groupsSkip];
             var groupSum = 0;
+
             for (var i = groupsSkip; i < _groups.Count; i++)
             {
                 groupSum += _groups[i];
@@ -239,7 +225,10 @@ public class Day12 : BaseDay
                     _sharedMemory[springsSkip + pos++] = SpringStatus.Damaged;
                 }
 
-                _sharedMemory[springsSkip + pos++] = SpringStatus.Operational;
+                if (groupsCount > 1)
+                {
+                    _sharedMemory[springsSkip + pos++] = SpringStatus.Operational;
+                }
 
                 var newLength = springsCount - pos;
 
@@ -257,8 +246,8 @@ public class Day12 : BaseDay
         springs.AddRange(row.Springs);
         springs.Add(SpringStatus.Unknown);
         springs.AddRange(row.Springs);
-        springs.Add(SpringStatus.Unknown);
-        springs.AddRange(row.Springs);
+        //springs.Add(SpringStatus.Unknown);
+        //springs.AddRange(row.Springs);
         //springs.Add(SpringStatus.Unknown);
         //springs.AddRange(row.Springs);
 
@@ -267,7 +256,7 @@ public class Day12 : BaseDay
         groups.AddRange(row.Groups);
         groups.AddRange(row.Groups);
         groups.AddRange(row.Groups);
-        groups.AddRange(row.Groups);
+        //groups.AddRange(row.Groups);
         //groups.AddRange(row.Groups);
 
         return (springs, groups);
