@@ -136,11 +136,12 @@ public class Day12 : BaseDay
 
         foreach (var (Springs, Groups) in rows)
         {
-            var possibilities = GeneratePossibilities2(Groups, Springs.Count);
+            var springs = new SpringStatus[Springs.Count];
+            var possibilities = GeneratePossibilities2(Groups, Springs.Count, springs);
 
             foreach (var possibility in possibilities)
             {
-                if (IsValid2(possibility, Springs))
+                if (IsValid2(springs, Springs))
                 {
                     result++;
                 }
@@ -150,7 +151,7 @@ public class Day12 : BaseDay
         return result.ToString();
     }
 
-    private bool IsValid2(List<SpringStatus> possibility, List<SpringStatus> springs)
+    private bool IsValid2(SpringStatus[] possibility, List<SpringStatus> springs)
     {
         for (var i = 0; i < springs.Count; i++)
         {
@@ -163,63 +164,74 @@ public class Day12 : BaseDay
         return true;
     }
 
-    private IEnumerable<List<SpringStatus>> GeneratePossibilities2(IEnumerable<int> groups, int length)
+    private IEnumerable<bool> GeneratePossibilities2(List<int> groups, int length, SpringStatus[] sharedMemory)
     {
-        if (groups.Count() == 1)
+        var skip = sharedMemory.Length - length;
+
+        if (groups.Count == 1)
         {
-            for (var offset = 0; offset <= length - groups.First(); offset++)
+            for (var offset = 0; offset <= length - groups[0]; offset++)
             {
-                var springs = new List<SpringStatus>();
+                //var springs = new List<SpringStatus>();
+                var pos = 0;
 
                 for (var i = 0; i < offset; i++)
                 {
-                    springs.Add(SpringStatus.Operational);
+                    //springs.Add(SpringStatus.Operational);
+                    sharedMemory[skip + pos++] = SpringStatus.Operational;
                 }
 
-                for (var i = 0; i < groups.First(); i++)
+                for (var i = 0; i < groups[0]; i++)
                 {
-                    springs.Add(SpringStatus.Damaged);
+                    //springs.Add(SpringStatus.Damaged);
+                    sharedMemory[skip + pos++] = SpringStatus.Damaged;
                 }
 
-                for (var i = 0; i < length - (offset + groups.First()); i++)
+                for (var i = 0; i < length - (offset + groups[0]); i++)
                 {
-                    springs.Add(SpringStatus.Operational);
+                    //springs.Add(SpringStatus.Operational);
+                    sharedMemory[skip + pos++] = SpringStatus.Operational;
                 }
 
-                yield return springs;
+                yield return true;
             }
         }
         else
         {
-            var maxOffset = length - (groups.Sum() + groups.Count() - 1);
+            var maxOffset = length - (groups.Sum() + groups.Count - 1);
 
             for (var offset = 0; offset <= maxOffset; offset++)
             {
-                var springs = new List<SpringStatus>();
+                //var springs = new List<SpringStatus>();
+                var pos = 0;
 
                 for (var i = 0; i < offset; i++)
                 {
-                    springs.Add(SpringStatus.Operational);
+                    //springs.Add(SpringStatus.Operational);
+                    sharedMemory[skip + pos++] = SpringStatus.Operational;
                 }
 
-                for (var i = 0; i < groups.First(); i++)
+                for (var i = 0; i < groups[0]; i++)
                 {
-                    springs.Add(SpringStatus.Damaged);
+                    //springs.Add(SpringStatus.Damaged);
+                    sharedMemory[skip + pos++] = SpringStatus.Damaged;
                 }
 
-                springs.Add(SpringStatus.Operational);
+                //springs.Add(SpringStatus.Operational);
+                sharedMemory[skip + pos++] = SpringStatus.Operational;
 
-                var newGroups = groups.Skip(1);
-                var newLength = length - springs.Count;
+                var newGroups = groups.Skip(1).ToList();
+                //var newLength = length - springs.Count;
+                var newLength = length - pos;
 
-                var endings = GeneratePossibilities2(newGroups, newLength);
+                var endings = GeneratePossibilities2(newGroups, newLength, sharedMemory);
 
                 foreach (var ending in endings)
                 {
-                    var newSprings = new List<SpringStatus>(springs);
-                    newSprings.AddRange(ending);
+                    //var newSprings = new List<SpringStatus>(springs);
+                    //newSprings.AddRange(ending);
 
-                    yield return newSprings;
+                    yield return true;
                 }
             }
         }
@@ -227,27 +239,27 @@ public class Day12 : BaseDay
 
     private (List<SpringStatus> Springs, List<int> Groups) ExpandRow((List<SpringStatus> Springs, List<int> Groups) row)
     {
-        var Springs = new List<SpringStatus>();
+        var springs = new List<SpringStatus>();
 
-        Springs.AddRange(row.Springs);
-        Springs.Add(SpringStatus.Unknown);
-        Springs.AddRange(row.Springs);
-        Springs.Add(SpringStatus.Unknown);
-        Springs.AddRange(row.Springs);
-        Springs.Add(SpringStatus.Unknown);
-        Springs.AddRange(row.Springs);
-        Springs.Add(SpringStatus.Unknown);
-        Springs.AddRange(row.Springs);
+        springs.AddRange(row.Springs);
+        springs.Add(SpringStatus.Unknown);
+        springs.AddRange(row.Springs);
+        springs.Add(SpringStatus.Unknown);
+        springs.AddRange(row.Springs);
+        //springs.Add(SpringStatus.Unknown);
+        //springs.AddRange(row.Springs);
+        //springs.Add(SpringStatus.Unknown);
+        //springs.AddRange(row.Springs);
 
-        var Groups = new List<int>();
+        var groups = new List<int>();
 
-        Groups.AddRange(row.Groups);
-        Groups.AddRange(row.Groups);
-        Groups.AddRange(row.Groups);
-        Groups.AddRange(row.Groups);
-        Groups.AddRange(row.Groups);
+        groups.AddRange(row.Groups);
+        groups.AddRange(row.Groups);
+        groups.AddRange(row.Groups);
+        //groups.AddRange(row.Groups);
+        //groups.AddRange(row.Groups);
 
-        return (Springs, Groups);
+        return (springs, groups);
     }
 
     private enum SpringStatus
