@@ -24,8 +24,6 @@ public class Day14 : BaseDay
         {
             grid = PerformCycle(grid);
 
-            Log(CalculateLoad(grid).ToString());
-
             if (!seen.TryAdd(grid.ToStringGrid(), i))
             {
                 var prev = seen[grid.ToStringGrid()] + 1;
