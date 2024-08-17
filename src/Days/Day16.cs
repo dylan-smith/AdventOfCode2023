@@ -22,15 +22,9 @@ public class Day16 : BaseDay
 
     private void ProcessBeam(char[,] map, Point point, Direction direction)
     {
-        var seenKey = (point, direction);
-
-        if (_seen.Contains(seenKey))
+        if (!_seen.Add((point, direction)))
         {
             return;
-        }
-        else
-        {
-            _seen.Add(seenKey);
         }
 
         if (!map.IsValidPoint(point))
@@ -38,7 +32,9 @@ public class Day16 : BaseDay
             return;
         }
 
-        while (map[point.X, point.Y] == '.' || (map[point.X, point.Y] == '-' && direction is Direction.Left or Direction.Right) || (map[point.X, point.Y] == '|' && direction is Direction.Up or Direction.Down))
+        var currentChar = map[point.X, point.Y];
+
+        while (currentChar == '.' || (currentChar == '-' && direction is Direction.Left or Direction.Right) || (currentChar == '|' && direction is Direction.Up or Direction.Down))
         {
             _energy.Add(point);
             point = point.Move(direction);
@@ -47,13 +43,15 @@ public class Day16 : BaseDay
             {
                 return;
             }
+
+            currentChar = map[point.X, point.Y];
         }
 
-        if (map[point.X, point.Y] is '|' or '-')
+        if (currentChar is '|' or '-')
         {
             _energy.Add(point);
 
-            if (map[point.X, point.Y] == '|')
+            if (currentChar == '|')
             {
                 ProcessBeam(map, point.MoveUp(), Direction.Up);
                 ProcessBeam(map, point.MoveDown(), Direction.Down);
@@ -69,44 +67,58 @@ public class Day16 : BaseDay
 
         _energy.Add(point);
 
-        if (map[point.X, point.Y] == '\\' && direction == Direction.Up)
+        if (currentChar == '\\')
         {
-            ProcessBeam(map, point.MoveLeft(), Direction.Left);
+            if (direction == Direction.Up)
+            {
+                ProcessBeam(map, point.MoveLeft(), Direction.Left);
+                return;
+            }
+
+            if (direction == Direction.Right)
+            {
+                ProcessBeam(map, point.MoveDown(), Direction.Down);
+                return;
+            }
+
+            if (direction == Direction.Down)
+            {
+                ProcessBeam(map, point.MoveRight(), Direction.Right);
+                return;
+            }
+
+            if (direction == Direction.Left)
+            {
+                ProcessBeam(map, point.MoveUp(), Direction.Up);
+                return;
+            }
         }
 
-        if (map[point.X, point.Y] == '\\' && direction == Direction.Right)
+        if (currentChar == '/')
         {
-            ProcessBeam(map, point.MoveDown(), Direction.Down);
-        }
+            if (direction == Direction.Up)
+            {
+                ProcessBeam(map, point.MoveRight(), Direction.Right);
+                return;
+            }
 
-        if (map[point.X, point.Y] == '\\' && direction == Direction.Down)
-        {
-            ProcessBeam(map, point.MoveRight(), Direction.Right);
-        }
+            if (direction == Direction.Right)
+            {
+                ProcessBeam(map, point.MoveUp(), Direction.Up);
+                return;
+            }
 
-        if (map[point.X, point.Y] == '\\' && direction == Direction.Left)
-        {
-            ProcessBeam(map, point.MoveUp(), Direction.Up);
-        }
+            if (direction == Direction.Down)
+            {
+                ProcessBeam(map, point.MoveLeft(), Direction.Left);
+                return;
+            }
 
-        if (map[point.X, point.Y] == '/' && direction == Direction.Up)
-        {
-            ProcessBeam(map, point.MoveRight(), Direction.Right);
-        }
-
-        if (map[point.X, point.Y] == '/' && direction == Direction.Right)
-        {
-            ProcessBeam(map, point.MoveUp(), Direction.Up);
-        }
-
-        if (map[point.X, point.Y] == '/' && direction == Direction.Down)
-        {
-            ProcessBeam(map, point.MoveLeft(), Direction.Left);
-        }
-
-        if (map[point.X, point.Y] == '/' && direction == Direction.Left)
-        {
-            ProcessBeam(map, point.MoveDown(), Direction.Down);
+            if (direction == Direction.Left)
+            {
+                ProcessBeam(map, point.MoveDown(), Direction.Down);
+                return;
+            }
         }
     }
 
@@ -116,18 +128,13 @@ public class Day16 : BaseDay
         map = map.FlipVertical();
         var maxEnergy = 0;
 
-        var totalBeams = (map.Width() * 2) + (map.Height() * 2);
-        var beamCount = 1;
-
         for (var x = 0; x < map.Width(); x++)
         {
-            Log($"Processing Beam {beamCount++} / {totalBeams}...");
             _seen = new();
             _energy = new();
             ProcessBeam(map, new Point(x, 0), Direction.Up);
             maxEnergy = Math.Max(maxEnergy, _energy.Count);
 
-            Log($"Processing Beam {beamCount++} / {totalBeams}...");
             _seen = new();
             _energy = new();
             ProcessBeam(map, new Point(x, map.Height() - 1), Direction.Down);
@@ -136,13 +143,11 @@ public class Day16 : BaseDay
 
         for (var y = 0; y < map.Height(); y++)
         {
-            Log($"Processing Beam {beamCount++} / {totalBeams}...");
             _seen = new();
             _energy = new();
             ProcessBeam(map, new Point(0, y), Direction.Right);
             maxEnergy = Math.Max(maxEnergy, _energy.Count);
 
-            Log($"Processing Beam {beamCount++} / {totalBeams}...");
             _seen = new();
             _energy = new();
             ProcessBeam(map, new Point(map.Width() - 1, y), Direction.Left);
