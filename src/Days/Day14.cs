@@ -1,6 +1,4 @@
-﻿using System.Windows.Controls;
-
-namespace AdventOfCode.Days;
+﻿namespace AdventOfCode.Days;
 
 [Day(2023, 14)]
 public class Day14 : BaseDay
@@ -17,7 +15,7 @@ public class Day14 : BaseDay
     public override string PartTwo(string input)
     {
         var grid = input.CreateCharGrid();
-        var seen = new Dictionary<string, long>();
+        var seen = new Dictionary<string, int>();
         var totalCycles = 1000000000;
 
         for (var i = 0; i < totalCycles; i++)
@@ -32,10 +30,7 @@ public class Day14 : BaseDay
                 var loopCount = (totalCycles - prev) / loopLength;
                 var remainingCycles = totalCycles - (prev + (loopCount * loopLength));
 
-                for (var j = 0; j < remainingCycles; j++)
-                {
-                    grid = PerformCycle(grid);
-                }
+                DoMany.Do(remainingCycles, () => grid = PerformCycle(grid));
 
                 return CalculateLoad(grid).ToString();
             }
