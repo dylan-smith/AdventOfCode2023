@@ -2,28 +2,10 @@
 
 namespace AdventOfCode.Days;
 
-// 0, 9 right
-// 1, 10, up
-// 1, 8 down
-// 0, 2 left
-// 2, 2 right
-// 4, 3 up
-// 5, 3 right
-// 6, 2 down
-// 5, 1 left
-// 1, 2 up
-// 0, 2 left CYCLE
-// 2, 2 right  CYCLE
-// 1, 0 down
-// 7, 1 right
-// 7, 2 up
-// 6, 3 left
-// 6, 4 up
-
 [Day(2023, 16)]
 public class Day16 : BaseDay
 {
-    private HashSet<(Point point, Direction direction)> _seen = new HashSet<(Point point, Direction direction)>();
+    private Dictionary<(Point point, Direction direction), char[,]> _seen = new Dictionary<(Point point, Direction direction), char[,]>();
 
     public override string PartOne(string input)
     {
@@ -37,17 +19,19 @@ public class Day16 : BaseDay
 
     private char[,] ProcessBeam(char[,] map, Point point, Direction direction)
     {
-        Log($"Point: ({point.X}, {point.Y}) Direction: {direction}");
-        var energy = new char[map.Width(), map.Height()];
+        //Log($"({point.X}, {point.Y}) {direction}");
 
-        if (_seen.Contains((point, direction)))
+        var energy = new char[map.Width(), map.Height()];
+        var seenKey = (point, direction);
+
+        if (_seen.ContainsKey(seenKey))
         {
-            Log($"CYCLE DETECTED. SKIPPING");
-            return energy;
+            //Log("CYCLE DETECTED. SKIPPING");
+            return _seen[seenKey];
         }
         else
         {
-            _seen.Add((point, direction));
+            _seen.Add(seenKey, energy);
         }
 
         if (!map.IsValidPoint(point))
@@ -62,6 +46,7 @@ public class Day16 : BaseDay
 
             if (!map.IsValidPoint(point))
             {
+                _seen.SafeSet(seenKey, energy);
                 return energy;
             }
         }
@@ -93,6 +78,7 @@ public class Day16 : BaseDay
                 energy[p.X, p.Y] = '#';
             }
 
+            _seen.SafeSet(seenKey, energy);
             return energy;
         }
 
@@ -149,6 +135,46 @@ public class Day16 : BaseDay
 
     public override string PartTwo(string input)
     {
-        return string.Empty;
+        var map = input.CreateCharGrid();
+        map = map.FlipVertical();
+        var maxEnergy = 0;
+
+        var totalBeams = (map.Width() * 2) + (map.Height() * 2);
+        var beamCount = 0;
+
+        _seen = new Dictionary<(Point point, Direction direction), char[,]>();
+
+        for (var x = 0; x < map.Width(); x++)
+        {
+            Log($"Processing Beam {beamCount++} / {totalBeams}...");
+            _seen = new Dictionary<(Point point, Direction direction), char[,]>();
+            var upEnergy = CountEnergy(ProcessBeam(map, new Point(x, 0), Direction.Up));
+            Log($"Processing Beam {beamCount++} / {totalBeams}...");
+            _seen = new Dictionary<(Point point, Direction direction), char[,]>();
+            var downEnergy = CountEnergy(ProcessBeam(map, new Point(x, map.Height() - 1), Direction.Down));
+
+            maxEnergy = Math.Max(maxEnergy, upEnergy);
+            maxEnergy = Math.Max(maxEnergy, downEnergy);
+        }
+
+        for (var y = 0; y < map.Height(); y++)
+        {
+            Log($"Processing Beam {beamCount++} / {totalBeams}...");
+            _seen = new Dictionary<(Point point, Direction direction), char[,]>();
+            var rightEnergy = CountEnergy(ProcessBeam(map, new Point(0, y), Direction.Right));
+            Log($"Processing Beam {beamCount++} / {totalBeams}...");
+            _seen = new Dictionary<(Point point, Direction direction), char[,]>();
+            var leftEnergy = CountEnergy(ProcessBeam(map, new Point(map.Width() - 1, y), Direction.Left));
+
+            maxEnergy = Math.Max(maxEnergy, rightEnergy);
+            maxEnergy = Math.Max(maxEnergy, leftEnergy);
+        }
+
+        return maxEnergy.ToString();
+    }
+
+    private int CountEnergy(char[,] map)
+    {
+        return map.GetPoints('#').Count();
     }
 }
