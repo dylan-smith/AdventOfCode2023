@@ -115,6 +115,10 @@ namespace AdventOfCode
                 var bx = b.X;
                 var by = b.Y;
 
+                // To be 100% accurate this code is probably needed to cover edge cases
+                // However, in the one place we use this so far these edge cases aren't needed
+                // so was commented out to speed up perf
+
                 //if ((bx == px) && (by == py))
                 //{
                 //    return true;
