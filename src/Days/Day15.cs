@@ -1,7 +1,4 @@
-﻿
-
-
-namespace AdventOfCode.Days;
+﻿namespace AdventOfCode.Days;
 
 [Day(2023, 15)]
 public class Day15 : BaseDay
@@ -59,15 +56,15 @@ public class Day15 : BaseDay
         var label = command.Split('=', '-')[0];
 
         var box = CalcHash(label);
+        var slot = boxes[box].FindIndex(b => b.Label == label);
 
         if (command.Contains('='))
         {
             var focus = int.Parse(command.Split('=', '-')[1]);
 
-            if (boxes[box].Any(b => b.Label == label))
+            if (slot >= 0)
             {
-                var i = boxes[box].FindIndex(b => b.Label == label);
-                boxes[box][i] = (label, focus);
+                boxes[box][slot] = (label, focus);
             }
             else
             {
@@ -77,11 +74,9 @@ public class Day15 : BaseDay
 
         if (command.Contains('-'))
         {
-            var i = boxes[box].FindIndex(b => b.Label == label);
-
-            if (i >= 0)
+            if (slot >= 0)
             {
-                boxes[box].RemoveAt(i);
+                boxes[box].RemoveAt(slot);
             }
         }
     }
@@ -90,11 +85,11 @@ public class Day15 : BaseDay
     {
         var result = 0L;
 
-        for (var lens = 0; lens < box.Count; lens++)
+        for (var slot = 0; slot < box.Count; slot++)
         {
             var focusingPower = boxNumber + 1;
-            focusingPower *= lens + 1;
-            focusingPower *= box[lens].Lens;
+            focusingPower *= slot + 1;
+            focusingPower *= box[slot].Lens;
 
             result += focusingPower;
         }
