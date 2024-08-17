@@ -9,7 +9,7 @@ public class Day14 : BaseDay
     {
         var grid = input.CreateCharGrid();
 
-        grid = TiltPlatform(grid, Direction.Up);
+        grid = TiltPlatform(grid);
 
         return CalculateLoad(grid).ToString();
     }
@@ -46,36 +46,28 @@ public class Day14 : BaseDay
 
     public char[,] PerformCycle(char[,] grid)
     {
-        grid = TiltPlatform(grid, Direction.Up);
-        grid = TiltPlatform(grid, Direction.Left);
-        grid = TiltPlatform(grid, Direction.Down);
-        grid = TiltPlatform(grid, Direction.Right);
+        grid = TiltPlatform(grid);
+        grid = grid.RotateClockwise();
+        grid = TiltPlatform(grid);
+        grid = grid.RotateClockwise();
+        grid = TiltPlatform(grid);
+        grid = grid.RotateClockwise();
+        grid = TiltPlatform(grid);
+        grid = grid.RotateClockwise();
 
         return grid;
     }
 
-    private char[,] TiltPlatform(char[,] grid, Direction direction)
+    private char[,] TiltPlatform(char[,] grid)
     {
-        if (direction == Direction.Left)
-        {
-            grid = grid.RotateClockwise();
-        }
+        var width = grid.Width();
+        var height = grid.Height();
 
-        if (direction == Direction.Down)
-        {
-            grid = grid.RotateClockwise(2);
-        }
-
-        if (direction == Direction.Right)
-        {
-            grid = grid.RotateClockwise(3);
-        }
-
-        for (var x = 0; x < grid.Width(); x++)
+        for (var x = 0; x < width; x++)
         {
             var topY = 0;
 
-            for (var y = 0; y < grid.Height(); y++)
+            for (var y = 0; y < height; y++)
             {
                 if (grid[x, y] == '#')
                 {
@@ -89,21 +81,6 @@ public class Day14 : BaseDay
                     topY++;
                 }
             }
-        }
-
-        if (direction == Direction.Left)
-        {
-            grid = grid.RotateClockwise(3);
-        }
-
-        if (direction == Direction.Down)
-        {
-            grid = grid.RotateClockwise(2);
-        }
-
-        if (direction == Direction.Right)
-        {
-            grid = grid.RotateClockwise();
         }
 
         return grid;
