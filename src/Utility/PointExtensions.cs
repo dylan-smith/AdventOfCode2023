@@ -115,23 +115,23 @@ namespace AdventOfCode
                 var bx = b.X;
                 var by = b.Y;
 
-                if ((bx == px) && (by == py))
-                {
-                    return true;
-                }
+                //if ((bx == px) && (by == py))
+                //{
+                //    return true;
+                //}
 
-                if ((by == ay) && (py == ay))
-                {
-                    if ((ax <= px) && (px <= bx))
-                    {
-                        return true;
-                    }
+                //if ((by == ay) && (py == ay))
+                //{
+                //    if ((ax <= px) && (px <= bx))
+                //    {
+                //        return true;
+                //    }
 
-                    if ((bx <= px) && (px <= ax))
-                    {
-                        return true;
-                    }
-                }
+                //    if ((bx <= px) && (px <= ax))
+                //    {
+                //        return true;
+                //    }
+                //}
 
                 if (((by < py) && (ay >= py)) || ((ay < py) && (by >= py)))
                 {
