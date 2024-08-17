@@ -380,13 +380,16 @@ public static class CharGridExtensions
 
     public static T[,] RotateClockwise<T>(this T[,] grid)
     {
-        var result = new T[grid.Width(), grid.Height()];
+        var width = grid.Width();
+        var height = grid.Height();
 
-        for (var y = 0; y < grid.Height(); y++)
+        var result = new T[width, height];
+
+        for (var y = 0; y < height; y++)
         {
-            for (var x = 0; x < grid.Width(); x++)
+            for (var x = 0; x < width; x++)
             {
-                result[grid.Width() - y - 1, x] = grid[x, y];
+                result[width - y - 1, x] = grid[x, y];
             }
         }
 
