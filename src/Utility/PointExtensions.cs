@@ -141,7 +141,6 @@ namespace AdventOfCode
                     }
                 }
 
-                //a = b;
                 ax = bx;
                 ay = by;
             }
